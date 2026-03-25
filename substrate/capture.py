@@ -109,11 +109,11 @@ def capture_and_analyze(
         activations_np = tensor.numpy()  # [seq_len, hidden_size]
 
         pca_results: dict[int, PCAResult] = {}
+        max_k = min(activations_np.shape[0], activations_np.shape[1])
         for k in pca_components:
-            # Guard against requesting more components than samples or features allow
-            max_k = min(activations_np.shape[0], activations_np.shape[1])
-            effective_k = min(k, max_k)
-            pca_results[k] = compute_pca_basis(activations_np, n_components=effective_k)
+            if k > max_k:
+                continue  # Skip k values that exceed the rank of the activation matrix
+            pca_results[k] = compute_pca_basis(activations_np, n_components=k)
 
         result[key] = LayerAnalysis(
             raw_activations=activations_np,
@@ -167,6 +167,8 @@ def load_analysis(path: Path) -> tuple[dict[str, LayerAnalysis], dict]:
 
         for layer_key in f.keys():
             layer_grp = f[layer_key]
+            if not isinstance(layer_grp, h5py.Group):
+                continue
             raw_activations = layer_grp["activations"][:]
 
             pca_results: dict[int, PCAResult] = {}

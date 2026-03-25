@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from substrate.capture import LayerAnalysis, PCAResult, compute_pca_basis, load_analysis, save_analysis
 
