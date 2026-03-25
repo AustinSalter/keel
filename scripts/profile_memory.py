@@ -9,10 +9,10 @@ import modal
 from substrate.config import TRINITY_MINI_ID
 
 # Thresholds (in bytes) for the comfort recommendation.
-# A100-40GB has 42_949_672_960 bytes; a comfortable fit is <80% utilisation.
-_A100_40GB = 40 * 1024 ** 3  # 42,949,672,960 bytes
-_COMFORTABLE_THRESHOLD = 0.80 * _A100_40GB
-_TIGHT_THRESHOLD = 0.95 * _A100_40GB
+# A100-80GB has 85,899,345,920 bytes; a comfortable fit is <80% utilisation.
+_A100_80GB = 80 * 1024 ** 3
+_COMFORTABLE_THRESHOLD = 0.80 * _A100_80GB
+_TIGHT_THRESHOLD = 0.95 * _A100_80GB
 
 
 def _bytes_to_gb(n: int | float) -> float:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 
 import modal
 
@@ -32,13 +33,13 @@ def _print_rotation_table(label: str, rotation_map: dict) -> None:
 
     for layer_key, summary in rotation_map.items():
         gd = summary["grassmann_distance"]
-        mean_a = summary["mean_angle"]
-        max_a = summary["max_angle"]
+        mean_a = math.degrees(summary["mean_angle"])
+        max_a = math.degrees(summary["max_angle"])
         print(
             f"  | {layer_key:<{col_layer}}"
             f" | {gd:>{col_val}.6f}"
-            f" | {mean_a:>{col_val}.4f}"
-            f" | {max_a:>{col_val}.4f} |"
+            f" | {mean_a:>{col_val}.2f}"
+            f" | {max_a:>{col_val}.2f} |"
         )
     print()
 
