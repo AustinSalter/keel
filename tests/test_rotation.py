@@ -96,12 +96,14 @@ def test_known_rotation() -> None:
 
     angles = compute_subspace_angles(basis_a, basis_b)
 
-    # Angles are returned descending; sort ascending for easier indexing
-    angles_asc = np.sort(angles)
-    np.testing.assert_allclose(angles_asc[0], 0.0, atol=1e-10,
-                               err_msg="First principal angle should be 0 (shared direction)")
-    np.testing.assert_allclose(angles_asc[1], theta, atol=1e-10,
-                               err_msg=f"Second principal angle should be theta={theta:.4f} rad")
+    # Verify descending sort order (spec requirement)
+    assert list(angles) == sorted(angles, reverse=True), "angles must be sorted descending"
+
+    # Descending: [theta, 0]
+    np.testing.assert_allclose(angles[0], theta, atol=1e-10,
+                               err_msg=f"First (largest) angle should be theta={theta:.4f} rad")
+    np.testing.assert_allclose(angles[1], 0.0, atol=1e-10,
+                               err_msg="Second (smallest) angle should be 0 (shared direction)")
 
 
 def test_grassmann_distance_manual() -> None:

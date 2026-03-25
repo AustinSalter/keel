@@ -28,9 +28,8 @@ def compute_subspace_angles(basis_a: np.ndarray, basis_b: np.ndarray) -> np.ndar
         Array of k principal angles in radians, sorted descending.
     """
     # scipy expects column-oriented [hidden_size, k], so transpose
-    angles = subspace_angles(basis_a.T, basis_b.T)
-    # subspace_angles returns angles in ascending order; reverse for descending
-    return angles[::-1].copy()
+    # scipy.linalg.subspace_angles returns angles in descending order
+    return subspace_angles(basis_a.T, basis_b.T)
 
 
 def compute_rotation_summary(basis_a: np.ndarray, basis_b: np.ndarray) -> RotationSummary:
