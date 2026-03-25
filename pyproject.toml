@@ -1,0 +1,29 @@
+[project]
+name = "keel"
+version = "0.0.1"
+description = "Substrate geometry: activation-based coherence measurement"
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.4",
+    "transformers>=4.46",
+    "accelerate>=1.0",
+    "safetensors",
+    "scikit-learn>=1.5",
+    "scipy>=1.14",
+    "numpy>=1.26",
+    "h5py>=3.11",
+    "matplotlib>=3.9",
+    "seaborn>=0.13",
+    "tqdm",
+    "modal",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
