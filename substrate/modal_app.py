@@ -121,7 +121,7 @@ def profile_memory(model_id: str) -> dict:
     torch.cuda.reset_peak_memory_stats()
 
     model, tokenizer = load_model(model_id)
-    baseline_bytes = torch.cuda.max_memory_allocated()
+    baseline_bytes = torch.cuda.memory_allocated()  # Steady-state footprint after load
 
     # Forward pass without hooks
     torch.cuda.reset_peak_memory_stats()
@@ -143,7 +143,7 @@ def profile_memory(model_id: str) -> dict:
     collector.register(model, layer_indices=TRINITY_LAYERS)
     with torch.no_grad():
         model(**inputs)
-    collector.collect()
+    _ = collector.collect()
     collector.remove_all()
     forward_with_hooks_bytes = torch.cuda.max_memory_allocated()
 
