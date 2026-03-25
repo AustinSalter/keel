@@ -4,6 +4,7 @@ from typing import Any
 
 import torch
 import torch.nn as nn
+import torch.utils.hooks
 
 
 class ActivationCollector:
@@ -11,16 +12,20 @@ class ActivationCollector:
 
     def __init__(self) -> None:
         self._activations: dict[str, torch.Tensor] = {}
-        self._handles: list[Any] = []
+        self._handles: list[torch.utils.hooks.RemovableHook] = []
 
     def register(self, model: nn.Module, layer_indices: list[int]) -> None:
         """Register forward hooks on model.model.layers[idx] for each idx in layer_indices."""
         layers = model.model.layers
         for idx in layer_indices:
+            if idx < 0 or idx >= len(layers):
+                raise IndexError(
+                    f"Layer index {idx} out of range for model with {len(layers)} layers"
+                )
             key = f"layer_{idx}"
 
             def make_hook(k: str):
-                def hook(module: nn.Module, input: Any, output: Any) -> None:
+                def hook(module: nn.Module, input_: Any, output: Any) -> None:
                     tensor = output[0] if isinstance(output, tuple) else output
                     tensor = tensor.detach().cpu().float()
                     # Squeeze batch dim if present: [1, seq_len, hidden] -> [seq_len, hidden]
