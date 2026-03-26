@@ -153,11 +153,44 @@ This reduces data collection from 4 layers to 3, saving ~25% compute.
 
 Estimated Modal compute: ~4-6 hours on A100, ~$6-9.
 
+## Design Decisions & Known Issues
+
+### Scope change from original spec
+The original Sprint 1 spec called for 6 payloads x 30 prompts = 180 conditions. This design expands to 8 payloads (adding P_soul and P_phello) for 240 conditions. Rationale: the P_soul vs P_phello comparison directly tests Phello's synthesis value — the most commercially relevant question in the experiment.
+
+### P_phello execution strategy
+P_phello is query-dependent (different steering document per prompt). Two options:
+- **Option A (recommended)**: Pre-generate all 30 P_phello payloads locally before Sprint 2 by calling the Supabase `synthesize` edge function. Save as static files. This avoids runtime dependencies on Supabase during the Modal GPU run.
+- **Option B**: Call the edge function live during Sprint 2. Risk: rate limits, cold starts, edge function failures mid-run.
+
+Decision: **Option A**. Generate and cache all P_phello payloads as part of Sprint 1, stored in `data/payloads/phello/`.
+
+### Spotify OAuth for headless execution
+Spotify OAuth requires a browser redirect. Approach:
+1. Run the initial OAuth flow locally (browser-based, one-time).
+2. Store the refresh token in `data/.secrets/spotify_refresh_token` (gitignored).
+3. `spotify_context.py` uses the refresh token to get an access token programmatically.
+4. The Spotify payload (P3) is generated once and saved as a static file — no Spotify API calls needed during Sprint 2 Modal runs.
+
+### Generation capture (post-response activations)
+The V1 experiment design requires capturing activations both BEFORE and AFTER model generation to compute subspace rotation. The current `capture.py` only handles pre-response (forward pass of context+prompt). Post-response capture requires hooking into autoregressive decoding (model.generate), which is a different code path. This is **Sprint 2 engineering work**, not Sprint 1. Sprint 1 delivers the payloads and prompts; Sprint 2 extends the capture pipeline for generation.
+
+### Storage estimate
+3,600 capture points at 3 layers. Trinity Mini hidden_size=2048 (not 3072 — checked config.json). Average sequence ~600 tokens. Per capture: 600 x 2048 x 4 bytes (float32) = ~4.7 MB. Total raw: 3,600 x 3 x 4.7 MB ≈ **50 GB**. With HDF5 gzip compression (~4x): **~12 GB**. Manageable on local disk. Consider storing only PCA components (not raw activations) for the full run, reducing to ~500 MB.
+
+### P1 source composition
+P1 draws from questionnaire responses, preference fragments, AND preference signals. This is intentionally richer than P_soul (which is pure identity prose). The P_soul vs P1 comparison is therefore confounded by both compression level AND source representation. This is acceptable — the question isn't "which source is better" but "does more context create more geometric signal." If a clean compression-only comparison is needed, a future experiment can hold source constant.
+
+### Category 3 food coverage
+The Phello questionnaire is heavily food-focused (wagyu/ribeye preferences, dining atmosphere, dietary restrictions including shellfish allergy, truffle oil aversion, Japanese food culture, hospitality identity). The `dining`, `dietary`, and `decompression` fragments all contain food data. P1 will include food preferences. Category 3 prompts are well-supported.
+
 ## Implementation Tasks
 
 1. Build `substrate/spotify_context.py` — Spotify OAuth + data pull + synthesis
 2. Build `substrate/payloads.py` — payload assembly (query Supabase, load Claude memory, compose all 8 variants)
 3. Write `data/prompts.json` — all 30 prompts with category metadata
-4. Write `data/payloads/` — save all static payloads as text files; P_phello is dynamic (generated per prompt)
-5. Update `substrate/config.py` — add layer sweep results, new layer indices {7, 11, 24}
-6. Validate: run a quick pilot (3 payloads x 3 prompts x 1 completion) to verify the pipeline before full Sprint 2
+4. Write `data/payloads/` — save all static payloads as text files
+5. Pre-generate P_phello payloads — call synthesize edge function for each of the 30 prompts, save to `data/payloads/phello/`
+6. Update `substrate/config.py` — new layer indices {7, 11, 24} (acceptance criterion: verified before Sprint 2)
+7. Verify token counts for all payloads before saving
+8. Validate: pilot run with P_null, P1, P_phello against prompts from categories 1, 3, and 5 (one each)
