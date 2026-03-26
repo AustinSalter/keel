@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "prompts": [
+    {
+      "id": 1,
+      "text": "What's the strongest version of the case against building Phello as a standalone company vs integrating into an existing AI platform?",
+      "category": "ai_ml",
+      "type": "A",
+      "description": "Personalized Phello standalone vs platform strategy assessment"
+    },
+    {
+      "id": 2,
+      "text": "If you had to pick one metric to prove substrate geometry works to a skeptical investor, what would it be and why?",
+      "category": "ai_ml",
+      "type": "A",
+      "description": "Personalized substrate geometry investor validation metric"
+    },
+    {
+      "id": 3,
+      "text": "What's the most important unsolved problem in AI agent memory and personalization?",
+      "category": "ai_ml",
+      "type": "B",
+      "description": "General AI agent memory and personalization frontier"
+    },
+    {
+      "id": 4,
+      "text": "Evaluate the strategic position of preference infrastructure as a category — is this a platform or a feature?",
+      "category": "ai_ml",
+      "type": "B",
+      "description": "General preference infrastructure category strategy"
+    },
+    {
+      "id": 5,
+      "text": "What are the strongest arguments for and against open-weight models for activation geometry research?",
+      "category": "ai_ml",
+      "type": "B",
+      "description": "General open-weight models for activation geometry tradeoffs"
+    },
+    {
+      "id": 6,
+      "text": "How should context injection for AI agents evolve over the next two years?",
+      "category": "ai_ml",
+      "type": "B",
+      "description": "General AI agent context injection evolution"
+    },
+    {
+      "id": 7,
+      "text": "What should I prioritize this quarter — research validation, product development, or fundraising?",
+      "category": "strategy",
+      "type": "A",
+      "description": "Personalized quarterly priority assessment for solo founder"
+    },
+    {
+      "id": 8,
+      "text": "What's the most honest assessment of my strengths and blind spots as a solo technical founder?",
+      "category": "strategy",
+      "type": "A",
+      "description": "Personalized solo technical founder self-assessment"
+    },
+    {
+      "id": 9,
+      "text": "What separates the founders who successfully navigate the pre-revenue phase from those who don't?",
+      "category": "strategy",
+      "type": "B",
+      "description": "General pre-revenue founder success factors"
+    },
+    {
+      "id": 10,
+      "text": "How should an early-stage startup think about pricing for a developer infrastructure product?",
+      "category": "strategy",
+      "type": "B",
+      "description": "General developer infrastructure pricing strategy"
+    },
+    {
+      "id": 11,
+      "text": "What's the strongest case for bootstrapping vs raising a seed round for a developer tools company?",
+      "category": "strategy",
+      "type": "B",
+      "description": "General bootstrapping vs seed round tradeoffs for developer tools"
+    },
+    {
+      "id": 12,
+      "text": "What role does conviction play in early-stage company building, and when does it become a liability?",
+      "category": "strategy",
+      "type": "B",
+      "description": "General conviction and founder liability in early-stage building"
+    },
+    {
+      "id": 13,
+      "text": "Plan a 5-day food-focused trip to a city I haven't been to but would love.",
+      "category": "food_hospitality",
+      "type": "A",
+      "description": "Personalized food travel itinerary recommendation"
+    },
+    {
+      "id": 14,
+      "text": "What's a dinner party menu that would feel authentically me — both the food and the vibe?",
+      "category": "food_hospitality",
+      "type": "A",
+      "description": "Personalized dinner party menu and vibe curation"
+    },
+    {
+      "id": 15,
+      "text": "What makes a restaurant experience feel genuinely personal rather than just well-executed?",
+      "category": "food_hospitality",
+      "type": "B",
+      "description": "General restaurant personalization vs execution quality"
+    },
+    {
+      "id": 16,
+      "text": "How is the relationship between chef and diner changing in the age of social media and AI-driven recommendations?",
+      "category": "food_hospitality",
+      "type": "B",
+      "description": "General chef-diner relationship evolution in social media and AI era"
+    },
+    {
+      "id": 17,
+      "text": "What can hospitality teach the tech industry about building products people actually love?",
+      "category": "food_hospitality",
+      "type": "B",
+      "description": "General hospitality lessons for tech product building"
+    },
+    {
+      "id": 18,
+      "text": "What distinguishes a great food city from a good one?",
+      "category": "food_hospitality",
+      "type": "B",
+      "description": "General criteria for great vs good food cities"
+    },
+    {
+      "id": 19,
+      "text": "Design a 12-week training block for breaking into the next grade in both climbing and surfing.",
+      "category": "outdoor",
+      "type": "A",
+      "description": "Personalized climbing and surfing progression training block"
+    },
+    {
+      "id": 20,
+      "text": "What outdoor trip would push me the most this year — and why that one specifically?",
+      "category": "outdoor",
+      "type": "A",
+      "description": "Personalized high-challenge outdoor trip recommendation"
+    },
+    {
+      "id": 21,
+      "text": "What does the science say about the relationship between physical practice and creative thinking?",
+      "category": "outdoor",
+      "type": "B",
+      "description": "General physical practice and creative thinking research"
+    },
+    {
+      "id": 22,
+      "text": "How should someone balance structured training with unstructured outdoor play?",
+      "category": "outdoor",
+      "type": "B",
+      "description": "General structured training vs unstructured outdoor play balance"
+    },
+    {
+      "id": 23,
+      "text": "What makes climbing culture different from other outdoor sports, and what does it get right?",
+      "category": "outdoor",
+      "type": "B",
+      "description": "General climbing culture distinctives and strengths"
+    },
+    {
+      "id": 24,
+      "text": "What's the case for analog, physical hobbies as essential counterweights to knowledge work?",
+      "category": "outdoor",
+      "type": "B",
+      "description": "General analog hobbies as counterweight to knowledge work"
+    },
+    {
+      "id": 25,
+      "text": "Explain the Krebs cycle and why it's central to cellular metabolism.",
+      "category": "generic_control",
+      "type": "C",
+      "description": "Generic biology control — Krebs cycle"
+    },
+    {
+      "id": 26,
+      "text": "What causes inflation, and what are the main schools of thought on how to control it?",
+      "category": "generic_control",
+      "type": "C",
+      "description": "Generic economics control — inflation causes and schools"
+    },
+    {
+      "id": 27,
+      "text": "How does TCP/IP work, and what makes it so resilient?",
+      "category": "generic_control",
+      "type": "C",
+      "description": "Generic networking control — TCP/IP fundamentals"
+    },
+    {
+      "id": 28,
+      "text": "Explain the basic principles of orbital mechanics.",
+      "category": "generic_control",
+      "type": "C",
+      "description": "Generic physics control — orbital mechanics"
+    },
+    {
+      "id": 29,
+      "text": "What is the significance of Godel's incompleteness theorems?",
+      "category": "generic_control",
+      "type": "C",
+      "description": "Generic mathematics control — Godel's incompleteness theorems"
+    },
+    {
+      "id": 30,
+      "text": "How do vaccines work at the cellular level?",
+      "category": "generic_control",
+      "type": "C",
+      "description": "Generic biology control — vaccine cellular mechanisms"
+    }
+  ]
+}
