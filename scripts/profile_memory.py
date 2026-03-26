@@ -41,7 +41,7 @@ def main() -> None:
     print(f"Running profile_memory on Modal for model: {args.model_id}")
     print("Calling remote function (this may take several minutes on first run)...")
 
-    profile_fn = modal.Function.lookup("keel-substrate", "profile_memory")
+    profile_fn = modal.Function.from_name("keel-substrate", "profile_memory")
     result: dict = profile_fn.remote(args.model_id)
 
     # -------------------------------------------------------------------------

@@ -54,6 +54,22 @@ def load_model(model_id: str, trust_remote_code: bool = True):
     return model, tokenizer
 
 
+def get_layer_indices(model) -> list[int]:
+    """Auto-detect appropriate layer indices from model architecture.
+
+    Picks 4 evenly-spaced layers (roughly at 25%, 50%, 75%, 100% depth).
+    """
+    num_layers = len(model.model.layers)
+    # 4 evenly spaced layers, 0-indexed
+    indices = [
+        num_layers // 4 - 1,
+        num_layers // 2 - 1,
+        3 * num_layers // 4 - 1,
+        num_layers - 1,
+    ]
+    return indices
+
+
 # ---------------------------------------------------------------------------
 # Modal functions
 # ---------------------------------------------------------------------------
@@ -75,13 +91,14 @@ def verify_pipeline(model_id: str) -> dict:
     os.environ["HF_HOME"] = "/cache"
 
     from substrate.capture import capture_and_analyze
-    from substrate.config import PCA_COMPONENTS, TRINITY_LAYERS
+    from substrate.config import PCA_COMPONENTS
 
     model, tokenizer = load_model(model_id)
+    layer_indices = get_layer_indices(model)
 
     prompt = "The quick brown fox jumps over the lazy dog."
     analysis = capture_and_analyze(
-        model, tokenizer, prompt, layer_indices=TRINITY_LAYERS, pca_components=PCA_COMPONENTS
+        model, tokenizer, prompt, layer_indices=layer_indices, pca_components=PCA_COMPONENTS
     )
 
     # Build JSON-serializable result
@@ -114,13 +131,13 @@ def profile_memory(model_id: str) -> dict:
 
     import torch
 
-    from substrate.config import TRINITY_LAYERS
     from substrate.hooks import ActivationCollector
 
     # Reset peak memory tracking
     torch.cuda.reset_peak_memory_stats()
 
     model, tokenizer = load_model(model_id)
+    layer_indices = get_layer_indices(model)
     baseline_bytes = torch.cuda.memory_allocated()  # Steady-state footprint after load
 
     # Forward pass without hooks
@@ -140,7 +157,7 @@ def profile_memory(model_id: str) -> dict:
     # Forward pass with hooks at 4 layers
     torch.cuda.reset_peak_memory_stats()
     collector = ActivationCollector()
-    collector.register(model, layer_indices=TRINITY_LAYERS)
+    collector.register(model, layer_indices=layer_indices)
     with torch.no_grad():
         model(**inputs)
     _ = collector.collect()
@@ -162,7 +179,7 @@ def profile_memory(model_id: str) -> dict:
         )
         seq_inputs = {k: v.to(device) for k, v in seq_inputs.items()}
         collector = ActivationCollector()
-        collector.register(model, layer_indices=TRINITY_LAYERS)
+        collector.register(model, layer_indices=layer_indices)
         with torch.no_grad():
             model(**seq_inputs)
         collector.collect()
@@ -196,10 +213,11 @@ def sanity_check(model_id: str) -> dict:
     os.environ["HF_HOME"] = "/cache"
 
     from substrate.capture import capture_and_analyze
-    from substrate.config import PCA_COMPONENTS, TRINITY_LAYERS
+    from substrate.config import PCA_COMPONENTS
     from substrate.rotation import compare_prompts
 
     model, tokenizer = load_model(model_id)
+    layer_indices = get_layer_indices(model)
 
     prompt_code = (
         "def quicksort(arr):\n"
@@ -219,19 +237,19 @@ def sanity_check(model_id: str) -> dict:
     )
 
     analysis_code = capture_and_analyze(
-        model, tokenizer, prompt_code, layer_indices=TRINITY_LAYERS, pca_components=PCA_COMPONENTS
+        model, tokenizer, prompt_code, layer_indices=layer_indices, pca_components=PCA_COMPONENTS
     )
     analysis_philosophy = capture_and_analyze(
         model,
         tokenizer,
         prompt_philosophy,
-        layer_indices=TRINITY_LAYERS,
+        layer_indices=layer_indices,
         pca_components=PCA_COMPONENTS,
     )
 
     # Re-run code prompt for self-comparison control
     analysis_code_2 = capture_and_analyze(
-        model, tokenizer, prompt_code, layer_indices=TRINITY_LAYERS, pca_components=PCA_COMPONENTS
+        model, tokenizer, prompt_code, layer_indices=layer_indices, pca_components=PCA_COMPONENTS
     )
 
     # Compare at k=10 (middle PCA component count)
