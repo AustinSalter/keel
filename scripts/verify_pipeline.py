@@ -93,7 +93,7 @@ def main() -> None:
         ax.set_ylabel("Explained Variance Ratio")
         ax.set_title(f"Explained Variance @ k={k_used}  |  {layer_key}  |  {result['model_id']}")
         ax.set_xticks(components)
-        ax.set_xlim(0.5, len(evr_k20) + 0.5)
+        ax.set_xlim(0.5, len(evr) + 0.5)
 
         out_path = figures_dir / f"explained_variance_{layer_key}.png"
         fig.tight_layout()

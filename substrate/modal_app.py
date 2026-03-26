@@ -17,7 +17,7 @@ image = (
     modal.Image.debian_slim(python_version="3.11")
     .pip_install(
         "torch",
-        "transformers",
+        "transformers==4.57.6",  # Trinity Mini requires 4.57.x (custom afmoe code)
         "accelerate",
         "safetensors",
         "scikit-learn",
