@@ -21,17 +21,15 @@ from substrate.payloads import (
 
 MOCK_QUESTIONNAIRE_DATA: dict = {
     "responses": [
-        {
-            "travel_dream": "I'd love to spend a month in Spain — Barcelona for the architecture and San Sebastián for the food.",
-            "favorite_meal": "Wagyu ribeye, medium rare, with a simple side of roasted vegetables. Omakase if I'm feeling adventurous.",
-            "food_aversions": "Shellfish allergy, and I can't stand truffle oil — it ruins everything it touches.",
-            "dining_vibe": "Buzzy and energetic when I'm out with friends, but for a date I want somewhere intimate with great lighting.",
-            "decompression": "Climbing is the main thing. I also run, always without headphones — I need the quiet. Afterwards, mezcal on the patio.",
-            "entertainment": "NYT crosswords most mornings, indie movies when I can find them, and I've gotten into pottery recently.",
-            "lifestyle_shift": "I used to be a total night owl but forced myself into mornings. It stuck. The Bear is probably my favorite show right now.",
-            "reading": "Just finished Unreasonable Hospitality and it genuinely changed how I think about service. TBPN podcast is my go-to.",
-            "trip_highlight": "A road trip along the Central Coast — Big Sur into SLO. The combination of landscape and food scene was perfect.",
-        }
+        {"question": "What's a trip you'd do again tomorrow?", "answer": "A road trip along the Central Coast — Big Sur into SLO. The combination of landscape and food scene was perfect."},
+        {"question": "What's your go-to order when someone else is picking up the tab?", "answer": "Wagyu ribeye, medium rare, with a simple side of roasted vegetables. Omakase if I'm feeling adventurous."},
+        {"question": "Any food allergies or aversions?", "answer": "Shellfish allergy, and I can't stand truffle oil — it ruins everything it touches."},
+        {"question": "What's the vibe of your ideal dining spot?", "answer": "Buzzy and energetic when I'm out with friends, but for a date I want somewhere intimate with great lighting."},
+        {"question": "How do you decompress after a long week?", "answer": "Climbing is the main thing. I also run, always without headphones — I need the quiet. Afterwards, mezcal on the patio."},
+        {"question": "What do you do for entertainment?", "answer": "NYT crosswords most mornings, indie movies when I can find them, and I've gotten into pottery recently."},
+        {"question": "Any lifestyle shifts that stuck?", "answer": "I used to be a total night owl but forced myself into mornings. It stuck. The Bear is probably my favorite show right now."},
+        {"question": "What are you reading or listening to?", "answer": "Just finished Unreasonable Hospitality and it genuinely changed how I think about service. TBPN podcast is my go-to."},
+        {"question": "Where do you dream of traveling?", "answer": "I'd love to spend a month in Spain — Barcelona for the architecture and San Sebastián for the food."},
     ],
     "fragments": [
         {

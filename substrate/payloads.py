@@ -181,11 +181,14 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
 
     # ---- Extract raw material from all three sources ----
 
-    # Gather response text by scanning all key-value pairs
+    # Map question keywords to answers for template matching.
+    # Responses arrive as a list of {"question": "...", "answer": "..."} pairs.
     response_texts: dict[str, str] = {}
-    if responses:
-        raw = responses[0] if isinstance(responses[0], dict) else {}
-        response_texts = {k: str(v) for k, v in raw.items()}
+    for qa in responses:
+        question = qa.get("question", "")
+        answer = qa.get("answer", "")
+        # Use the question text as key — template checks for keywords in these keys
+        response_texts[question.lower()] = answer
 
     # Organize fragments by domain
     fragments_by_domain: dict[str, list[str]] = {}
@@ -199,19 +202,23 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
         domain = sig.get("domain", "general")
         signals_by_domain.setdefault(domain, []).append(sig)
 
+    # ---- Helper: extract first N sentences from a fragment ----
+    def _first_sentences(text: str, n: int = 2) -> str:
+        """Return the first *n* sentences of *text*."""
+        sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+        return " ".join(sentences[:n])
+
     # ---- Build prose paragraphs ----
 
     parts: list[str] = []
 
-    # Opening: who this person is broadly
-    opening_lines: list[str] = []
-
-    # Infer broad identity from responses
+    # -- Opening paragraph (always included) --
+    # Infer lifestyle clues from responses
     lifestyle_clues: list[str] = []
     for key, val in response_texts.items():
         if "lifestyle" in key or "shift" in key:
             lifestyle_clues.append(val)
-        if "decompression" in key or "decompress" in key:
+        if "decompress" in key:
             lifestyle_clues.append(val)
 
     opening = (
@@ -223,41 +230,20 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
 
     # Enrich with lifestyle specifics
     if lifestyle_clues:
-        morning_ref = ""
         for clue in lifestyle_clues:
             if "morning" in clue.lower() or "night owl" in clue.lower():
-                morning_ref = (
+                opening += (
                     " A self-described former night owl, he forced himself into mornings "
                     "and the change stuck — a detail that says something about his capacity "
                     "for deliberate reinvention."
                 )
                 break
-        opening += morning_ref
 
     parts.append(opening)
 
-    # Food and dining paragraph (draw from fragments + signals + responses)
-    food_parts: list[str] = []
+    # -- Food & Dining paragraph (fragments + signals + responses) --
     food_frags = fragments_by_domain.get("food", [])
     food_sigs = signals_by_domain.get("food", [])
-
-    # Start from raw response color
-    food_response_keys = [
-        k for k in response_texts if any(w in k for w in ["meal", "food", "dining", "aversion"])
-    ]
-    favorite_foods: list[str] = []
-    aversions: list[str] = []
-    dining_vibes: list[str] = []
-    for k in food_response_keys:
-        val = response_texts[k]
-        if "aversion" in k or "allerg" in k.lower():
-            aversions.append(val)
-        elif "vibe" in k or "atmosphere" in k:
-            dining_vibes.append(val)
-        else:
-            favorite_foods.append(val)
-
-    # Extract specific signal data points
     food_prefs = [s["value"] for s in food_sigs if s.get("signal_type") == "preference"]
     food_allergies = [s["value"] for s in food_sigs if s.get("signal_type") == "allergy"]
     food_aversions = [s["value"] for s in food_sigs if s.get("signal_type") == "aversion"]
@@ -270,15 +256,10 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
             f"for quality ingredients handled with care rather than architectural plating "
             f"or trendy concepts."
         )
+    # Pull synthesized dining insight from fragments
     if food_frags:
-        # Pull the fragment's synthesized insight about dining style
-        for frag_text in food_frags:
-            if "chef-driven" in frag_text.lower() or "creative" in frag_text.lower():
-                food_text += (
-                    " He prefers chef-driven restaurants where the kitchen takes creative risks "
-                    "over safe crowd-pleasers."
-                )
-                break
+        food_frag_prose = _first_sentences(food_frags[0])
+        food_text += f" {food_frag_prose}"
     if food_allergies or food_aversions:
         avoid_items = food_allergies + food_aversions
         avoid_str = " and ".join(avoid_items)
@@ -286,7 +267,14 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
             f" On the avoidance side, {avoid_str} are non-negotiable — "
             f"the former a genuine allergy, the latter a visceral aversion."
         )
-    if dining_vibes or any("atmosphere" in f.lower() or "intimate" in f.lower() for f in food_frags):
+    # Dining atmosphere from responses
+    dining_answers = [
+        val for key, val in response_texts.items()
+        if any(w in key for w in ["vibe", "dining", "atmosphere"])
+    ]
+    if dining_answers or any(
+        "intimate" in f.lower() or "atmosphere" in f.lower() for f in food_frags
+    ):
         food_text += (
             " The ideal dining atmosphere shifts with context: buzzy and energetic "
             "with friends, intimate with great lighting for a date."
@@ -294,121 +282,133 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
 
     parts.append(food_text)
 
-    # Travel paragraph
+    # -- Travel paragraph (fragments + signals + responses) --
     travel_frags = fragments_by_domain.get("travel", [])
     travel_sigs = signals_by_domain.get("travel", [])
-    travel_responses = [
-        response_texts[k] for k in response_texts if "trip" in k or "travel" in k
+    travel_answers = [
+        val for key, val in response_texts.items()
+        if any(w in key for w in ["trip", "travel"])
     ]
 
-    travel_text = ""
-    if travel_frags or travel_sigs or travel_responses:
-        travel_text = "Travel for him is not about volume of destinations but depth of experience."
-        # Pull from raw response for voice
-        for resp in travel_responses:
-            if "central coast" in resp.lower() or "slo" in resp.lower() or "big sur" in resp.lower():
-                travel_text += (
-                    " A road trip along California's Central Coast — Big Sur rolling into "
-                    "San Luis Obispo — stands out as a defining trip, the kind where landscape "
-                    "and food scene converge into something greater than either alone."
-                )
-                break
-        # Pull aspiration signals
-        aspiration_sigs = [s for s in travel_sigs if s.get("signal_type") == "aspiration"]
-        if aspiration_sigs:
-            dest = aspiration_sigs[0]["value"]
+    travel_text = "Travel for him is not about volume of destinations but depth of experience."
+    # Weave in fragment prose
+    if travel_frags:
+        travel_frag_prose = _first_sentences(travel_frags[0])
+        travel_text += f" {travel_frag_prose}"
+    # Pull from raw response for voice
+    for resp in travel_answers:
+        if any(w in resp.lower() for w in ["central coast", "slo", "big sur"]):
+            travel_text += (
+                " A road trip along California's Central Coast — Big Sur rolling into "
+                "San Luis Obispo — stands out as a defining trip, the kind where landscape "
+                "and food scene converge into something greater than either alone."
+            )
+            break
+    # Aspiration signals — only add if not already covered by fragment prose
+    aspiration_sigs = [s for s in travel_sigs if s.get("signal_type") == "aspiration"]
+    if aspiration_sigs:
+        dest = aspiration_sigs[0]["value"]
+        already_mentioned = dest.lower() in travel_text.lower()
+        if not already_mentioned:
             travel_text += (
                 f" {dest} lives on the horizon as an aspirational destination — specifically "
                 f"for the intersection of architecture, culture, and food."
             )
-        elif travel_frags:
-            for frag_text in travel_frags:
-                if "spain" in frag_text.lower():
-                    travel_text += (
-                        " Spain lives on the horizon as an aspirational destination — specifically "
-                        "for the intersection of architecture, culture, and food."
-                    )
-                    break
-        parts.append(travel_text)
+    elif travel_frags:
+        for frag_text in travel_frags:
+            if "spain" in frag_text.lower() and "spain" not in travel_text.lower():
+                travel_text += (
+                    " Spain lives on the horizon as an aspirational destination — specifically "
+                    "for the intersection of architecture, culture, and food."
+                )
+                break
+    parts.append(travel_text)
 
-    # Lifestyle, decompression, and entertainment
+    # -- Lifestyle & Decompression paragraph (fragments + signals + responses) --
     lifestyle_frags = fragments_by_domain.get("lifestyle", [])
     outdoor_sigs = signals_by_domain.get("outdoor", [])
-    decomp_responses = [response_texts[k] for k in response_texts if "decompress" in k]
-    entertainment_responses = [
-        response_texts[k] for k in response_texts if "entertainment" in k
+    decomp_answers = [
+        val for key, val in response_texts.items() if "decompress" in key
     ]
-    reading_responses = [response_texts[k] for k in response_texts if "reading" in k]
 
-    lifestyle_text = ""
-    # Decompression and physical
-    if decomp_responses or outdoor_sigs or lifestyle_frags:
-        lifestyle_text = "His decompression patterns reveal as much as his active choices."
-        climbing_ref = any(
-            s.get("value", "").lower() in ("rock climbing", "climbing")
-            for s in outdoor_sigs
+    lifestyle_text = "His decompression patterns reveal as much as his active choices."
+    # Lead with fragment prose when available
+    if lifestyle_frags:
+        lifestyle_frag_prose = _first_sentences(lifestyle_frags[0])
+        lifestyle_text += f" {lifestyle_frag_prose}"
+    # Climbing from signals
+    climbing_ref = any(
+        s.get("value", "").lower() in ("rock climbing", "climbing")
+        for s in outdoor_sigs
+    )
+    if climbing_ref:
+        lifestyle_text += (
+            " Climbing is the primary physical outlet — a sport that demands "
+            "presence and problem-solving in equal measure."
         )
-        if climbing_ref:
+    # Decompress details from responses
+    for resp in decomp_answers:
+        if "without headphones" in resp.lower() or "quiet" in resp.lower():
             lifestyle_text += (
-                " Climbing is the primary physical outlet — a sport that demands "
-                "presence and problem-solving in equal measure."
+                " He runs without headphones, deliberately choosing silence over stimulation."
             )
-        for resp in decomp_responses:
-            if "without headphones" in resp.lower() or "quiet" in resp.lower():
-                lifestyle_text += (
-                    " He runs without headphones, deliberately choosing silence over stimulation."
-                )
-                break
-        for resp in decomp_responses:
-            if "mezcal" in resp.lower():
-                lifestyle_text += (
-                    " The evening wind-down is mezcal on the patio — unhurried, sensory, solitary."
-                )
-                break
+            break
+    for resp in decomp_answers:
+        if "mezcal" in resp.lower():
+            lifestyle_text += (
+                " The evening wind-down is mezcal on the patio — unhurried, sensory, solitary."
+            )
+            break
 
-    # Entertainment and intellectual consumption
-    entertainment_text = ""
-    ent_responses = entertainment_responses + reading_responses
-    if ent_responses or lifestyle_frags:
-        entertainment_text = (
-            " Intellectually, he stays sharp through a mix of low-key and high-engagement pursuits."
-        )
-        for resp in entertainment_responses:
-            resp_lower = resp.lower()
-            mentions: list[str] = []
-            if "crossword" in resp_lower:
-                mentions.append("the NYT crossword most mornings")
-            if "indie" in resp_lower and "movie" in resp_lower:
-                mentions.append("indie films when he can find them")
-            if "pottery" in resp_lower:
-                mentions.append("pottery as a hands-on creative practice")
-            if mentions:
-                entertainment_text += " " + ", ".join(mentions).capitalize() + "."
-                break
-        for resp in reading_responses:
-            resp_lower = resp.lower()
-            if "unreasonable hospitality" in resp_lower:
-                entertainment_text += (
-                    " Unreasonable Hospitality reshaped how he thinks about service and craft"
-                )
-                if "tbpn" in resp_lower or "podcast" in resp_lower:
-                    entertainment_text += (
-                        ", and the TBPN podcast is a regular companion."
-                    )
-                else:
-                    entertainment_text += "."
-                break
-        # Check for The Bear reference from lifestyle clues
-        for key, val in response_texts.items():
-            if "the bear" in val.lower():
-                entertainment_text += (
-                    " The Bear is a current favorite — a show about the collision of "
-                    "craft, pressure, and care that clearly resonates."
-                )
-                break
+    parts.append(lifestyle_text)
 
-    if lifestyle_text or entertainment_text:
-        parts.append((lifestyle_text + entertainment_text).strip())
+    # -- Entertainment & Intellectual Consumption paragraph --
+    entertainment_answers = [
+        val for key, val in response_texts.items() if "entertainment" in key
+    ]
+    reading_answers = [
+        val for key, val in response_texts.items()
+        if "reading" in key or "listening" in key
+    ]
+
+    entertainment_text = (
+        "Intellectually, he stays sharp through a mix of low-key and high-engagement pursuits."
+    )
+    for resp in entertainment_answers:
+        resp_lower = resp.lower()
+        mentions: list[str] = []
+        if "crossword" in resp_lower:
+            mentions.append("The NYT crossword most mornings")
+        if "indie" in resp_lower and "movie" in resp_lower:
+            mentions.append("indie films when he can find them")
+        if "pottery" in resp_lower:
+            mentions.append("pottery as a hands-on creative practice")
+        if mentions:
+            entertainment_text += " " + ", ".join(mentions) + "."
+            break
+    for resp in reading_answers:
+        resp_lower = resp.lower()
+        if "unreasonable hospitality" in resp_lower:
+            entertainment_text += (
+                " Unreasonable Hospitality reshaped how he thinks about service and craft"
+            )
+            if "tbpn" in resp_lower or "podcast" in resp_lower:
+                entertainment_text += (
+                    ", and the TBPN podcast is a regular companion."
+                )
+            else:
+                entertainment_text += "."
+            break
+    # Check for The Bear reference across all answers
+    for _key, val in response_texts.items():
+        if "the bear" in val.lower():
+            entertainment_text += (
+                " The Bear is a current favorite — a show about the collision of "
+                "craft, pressure, and care that clearly resonates."
+            )
+            break
+
+    parts.append(entertainment_text)
 
     return "\n\n".join(parts)
 
