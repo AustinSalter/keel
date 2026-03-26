@@ -16,10 +16,12 @@ dependencies = [
     "seaborn>=0.13",
     "tqdm",
     "modal",
+    "spotipy>=2.26.0",
 ]
 
 [dependency-groups]
 dev = [
+    "psycopg2-binary>=2.9.11",
     "pytest>=8.0",
     "ruff",
 ]
