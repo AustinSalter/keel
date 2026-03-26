@@ -23,3 +23,6 @@ results/
 
 # OS
 .DS_Store
+
+# Secrets
+data/.secrets/

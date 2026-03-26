@@ -17,6 +17,15 @@ TRINITY_FALLBACK_LAYERS = [15, 31]  # Memory-constrained fallback
 QWEN_LAYERS = [6, 13, 20, 27]
 QWEN_FALLBACK_LAYERS = [13, 27]
 
+# Layer indices derived from Sprint 0 layer sweep
+# Layers 7, 11: optimal zone (EVR 0.87+, SNR 12-18x)
+# Layer 24: post-noise-wall recovery zone
+SWEEP_LAYERS = [7, 11, 24]
+
+# Supabase config (Phello)
+SUPABASE_URL = "https://qfyufzqfjxfiqehnveck.supabase.co"
+PHELLO_USER_ID = "d09855bd-2290-4d52-bb04-13517eef5b81"
+
 # PCA component counts to test
 PCA_COMPONENTS = [5, 10, 20]
 
@@ -26,7 +35,7 @@ class CaptureConfig:
     """Configuration for an activation capture run."""
 
     model_id: str = TRINITY_MINI_ID
-    layer_indices: list[int] = field(default_factory=lambda: list(TRINITY_LAYERS))
+    layer_indices: list[int] = field(default_factory=lambda: list(SWEEP_LAYERS))
     dtype: torch.dtype = torch.bfloat16
     max_seq_length: int = 4096
     pca_components: list[int] = field(default_factory=lambda: list(PCA_COMPONENTS))
