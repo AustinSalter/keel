@@ -5,6 +5,11 @@ Provides Modal functions:
   - profile_memory: VRAM usage measurements at various sequence lengths
   - sanity_check: Cross-prompt subspace rotation comparison (code vs philosophy)
   - layer_sweep: Full 32-layer sweep with subtle prompt pairs for layer selection
+  - pilot_capture: Single (context, prompt) pair activation capture with rotation
+  - deep_analysis: Cross-prompt geometry, context decomposition, EVR, text generation
+  - evr_elbow_analysis: EVR elbow analysis + full-dimensional comparison (CKA, cosine)
+  - cka_diagnostic: CKA diagnostic comparing context-only vs context+prompt
+  - coherence_experiment: SOUL context + prompts x completions coherence correlation
 """
 
 from __future__ import annotations
@@ -998,3 +1003,120 @@ def cka_diagnostic(
         "cka_context_vs_full": cka_results,
         "cosine_context_vs_full": cos_results,
     }
+
+
+@app.function(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=3600,
+)
+def coherence_experiment(
+    model_id: str,
+    layer_indices: list[int],
+    soul_text: str,
+    prompts: list[dict],  # [{"id": int, "text": str, "category": str}, ...]
+    completions_per_prompt: int = 20,
+    max_new_tokens: int = 512,
+    temperature: float = 0.8,
+) -> list[dict]:
+    """Coherence correlation experiment: SOUL context + prompts x completions, computing CKA at each step.
+
+    For each prompt, captures context-only activations once (the SOUL geometry),
+    then generates multiple completions and measures how each completion shifts the
+    activation geometry via feature-space CKA at each target layer.
+
+    Returns a list of result dicts, one per (prompt, completion) pair.
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+    import torch
+
+    from substrate.hooks import ActivationCollector
+
+    model, tokenizer = load_model(model_id)
+    device = next(model.parameters()).device
+
+    def capture(text: str) -> dict[str, np.ndarray]:
+        """Run forward pass and capture activations at target layers."""
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        collector = ActivationCollector()
+        collector.register(model, layer_indices=layer_indices)
+        with torch.no_grad():
+            model(**inputs)
+        raw = collector.collect()
+        collector.remove_all()
+        return {key: val.numpy() for key, val in raw.items()}
+
+    def feature_cka(act_a: np.ndarray, act_b: np.ndarray) -> float:
+        """Feature-space CKA for matrices with different sample sizes."""
+        a = act_a - act_a.mean(axis=0)
+        b = act_b - act_b.mean(axis=0)
+        feat_a = a.T @ a / a.shape[0]
+        feat_b = b.T @ b / b.shape[0]
+        numerator = np.linalg.norm(feat_a @ feat_b, "fro") ** 2
+        denom = np.linalg.norm(feat_a, "fro") * np.linalg.norm(feat_b, "fro")
+        return float(numerator / (denom ** 2)) if denom > 0 else 0.0
+
+    results: list[dict] = []
+    total_completions = len(prompts) * completions_per_prompt
+    completed = 0
+
+    for prompt in prompts:
+        prompt_id = prompt["id"]
+        prompt_text = prompt["text"]
+        prompt_category = prompt["category"]
+        print(f"  Prompt {prompt_id} ({prompt_category}): capturing context-only activations...")
+
+        # Capture context-only activations ONCE per prompt (SOUL geometry doesn't change)
+        acts_context = capture(soul_text)
+
+        for i in range(completions_per_prompt):
+            # Generate completion
+            full_input = f"{soul_text}\n\n{prompt_text}"
+            inputs = tokenizer(full_input, return_tensors="pt", truncation=True, max_length=4096)
+            inputs = {k_: v.to(device) for k_, v in inputs.items()}
+            with torch.no_grad():
+                output = model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    temperature=temperature,
+                    do_sample=True,
+                )
+            completion_text = tokenizer.decode(
+                output[0][inputs["input_ids"].shape[1]:],
+                skip_special_tokens=True,
+            )
+
+            # Capture post-completion activations
+            post_text = f"{soul_text}\n\n{prompt_text}{completion_text}"
+            acts_post = capture(post_text)
+
+            # Compute CKA at each layer
+            result_entry: dict = {
+                "prompt_id": prompt_id,
+                "prompt_category": prompt_category,
+                "completion_idx": i,
+                "completion_text": completion_text,
+            }
+            for idx in layer_indices:
+                layer_key = f"layer_{idx}"
+                if layer_key in acts_context and layer_key in acts_post:
+                    result_entry[f"cka_{layer_key}"] = feature_cka(
+                        acts_context[layer_key], acts_post[layer_key]
+                    )
+                else:
+                    result_entry[f"cka_{layer_key}"] = 0.0
+
+            results.append(result_entry)
+            completed += 1
+
+            if completed % 10 == 0:
+                print(f"  Progress: {completed}/{total_completions} completions done")
+
+    print(f"  Experiment complete: {len(results)} results collected")
+    return results
