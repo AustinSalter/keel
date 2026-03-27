@@ -412,3 +412,98 @@ def layer_sweep(model_id: str) -> dict:
         },
         "layers": results_per_layer,
     }
+
+
+@app.function(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=600,
+)
+def pilot_capture(
+    model_id: str,
+    context: str,
+    prompt: str,
+    layer_indices: list[int],
+) -> dict:
+    """Capture activations for a single (context, prompt) pair.
+
+    Injects context as a preamble, runs the prompt, captures PCA at each layer,
+    then computes rotation between the context-only geometry and the context+prompt geometry.
+
+    Returns JSON-serializable dict with rotation summaries per layer and EVR data.
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+
+    from substrate.capture import capture_activations, compute_pca_basis
+    from substrate.rotation import compute_rotation_summary
+
+    model, tokenizer = load_model(model_id)
+
+    k = 10
+
+    # Capture 1: context only (pre-response geometry)
+    context_text = context if context else "You are a helpful assistant."
+    acts_context = {}
+    from substrate.hooks import ActivationCollector
+    import torch
+
+    inputs = tokenizer(context_text, return_tensors="pt", truncation=True, max_length=4096)
+    device = next(model.parameters()).device
+    inputs = {k_: v.to(device) for k_, v in inputs.items()}
+    collector = ActivationCollector()
+    collector.register(model, layer_indices=layer_indices)
+    with torch.no_grad():
+        model(**inputs)
+    raw_context = collector.collect()
+    collector.remove_all()
+
+    # Capture 2: context + prompt (the full input)
+    full_text = f"{context}\n\n{prompt}" if context else prompt
+    inputs2 = tokenizer(full_text, return_tensors="pt", truncation=True, max_length=4096)
+    inputs2 = {k_: v.to(device) for k_, v in inputs2.items()}
+    collector2 = ActivationCollector()
+    collector2.register(model, layer_indices=layer_indices)
+    with torch.no_grad():
+        model(**inputs2)
+    raw_full = collector2.collect()
+    collector2.remove_all()
+
+    # Per-layer: PCA + rotation
+    rotation_results = {}
+    evr_results = {}
+    for idx in layer_indices:
+        layer_key = f"layer_{idx}"
+
+        act_ctx = raw_context[layer_key].numpy()
+        act_full = raw_full[layer_key].numpy()
+
+        # Clamp k to min sequence length
+        effective_k = min(k, act_ctx.shape[0], act_full.shape[0])
+        if effective_k < 2:
+            continue
+
+        pca_ctx = compute_pca_basis(act_ctx, n_components=effective_k)
+        pca_full = compute_pca_basis(act_full, n_components=effective_k)
+
+        rot = compute_rotation_summary(pca_ctx.components, pca_full.components)
+        rotation_results[layer_key] = {
+            "grassmann_distance": rot.grassmann_distance,
+            "mean_angle": rot.mean_angle,
+            "max_angle": rot.max_angle,
+            "principal_angles": rot.principal_angles.tolist(),
+        }
+        evr_results[layer_key] = {
+            "context_evr_sum": float(pca_ctx.explained_variance_ratio.sum()),
+            "full_evr_sum": float(pca_full.explained_variance_ratio.sum()),
+        }
+
+    return {
+        "model_id": model_id,
+        "rotation": rotation_results,
+        "explained_variance": evr_results,
+    }
