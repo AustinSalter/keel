@@ -1,0 +1,1552 @@
+[
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 0,
+    "cka_l24": 0.42481729388237,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 1,
+    "cka_l24": 0.31445109844207764,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 2,
+    "cka_l24": 0.3081412613391876,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 3,
+    "cka_l24": 0.30779433250427246,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 4,
+    "cka_l24": 0.3358742296695709,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 5,
+    "cka_l24": 0.41692474484443665,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 6,
+    "cka_l24": 0.22631266713142395,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 7,
+    "cka_l24": 0.35288581252098083,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 8,
+    "cka_l24": 0.23734742403030396,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 9,
+    "cka_l24": 0.4108838737010956,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 10,
+    "cka_l24": 0.22862912714481354,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 11,
+    "cka_l24": 0.2798517346382141,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 12,
+    "cka_l24": 0.3167044520378113,
+    "coherence": 3.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 13,
+    "cka_l24": 0.4184573292732239,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 14,
+    "cka_l24": 0.4379541575908661,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 15,
+    "cka_l24": 0.25258907675743103,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 16,
+    "cka_l24": 0.28952404856681824,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 17,
+    "cka_l24": 0.24439465999603271,
+    "coherence": 5.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 18,
+    "cka_l24": 0.31784313917160034,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 1,
+    "prompt_category": "ai_ml",
+    "completion_idx": 19,
+    "cka_l24": 0.30887970328330994,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 0,
+    "cka_l24": 0.21734324097633362,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 1,
+    "cka_l24": 0.2503129839897156,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 2,
+    "cka_l24": 0.2587737441062927,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 3,
+    "cka_l24": 0.26961004734039307,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 4,
+    "cka_l24": 0.387508749961853,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 5,
+    "cka_l24": 0.2812682092189789,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 6,
+    "cka_l24": 0.2535460591316223,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 7,
+    "cka_l24": 0.273160457611084,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 8,
+    "cka_l24": 0.387075275182724,
+    "coherence": 3.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 9,
+    "cka_l24": 0.2700759768486023,
+    "coherence": 2.0,
+    "extension": 3.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 10,
+    "cka_l24": 0.25331541895866394,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 11,
+    "cka_l24": 0.3200680613517761,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 12,
+    "cka_l24": 0.25964248180389404,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 13,
+    "cka_l24": 0.28262022137641907,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 14,
+    "cka_l24": 0.27211374044418335,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 15,
+    "cka_l24": 0.39247092604637146,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 16,
+    "cka_l24": 0.30993011593818665,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 17,
+    "cka_l24": 0.4214506149291992,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 18,
+    "cka_l24": 0.2545667886734009,
+    "coherence": 2.0,
+    "extension": 3.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 2,
+    "prompt_category": "ai_ml",
+    "completion_idx": 19,
+    "cka_l24": 0.26754987239837646,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 0,
+    "cka_l24": 0.27296361327171326,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 1,
+    "cka_l24": 0.4125022888183594,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 2,
+    "cka_l24": 0.32038000226020813,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 3,
+    "cka_l24": 0.4171328544616699,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 4,
+    "cka_l24": 0.2590057849884033,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 5,
+    "cka_l24": 0.37829163670539856,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 6,
+    "cka_l24": 0.3102039694786072,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 7,
+    "cka_l24": 0.28687551617622375,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 8,
+    "cka_l24": 0.3049788177013397,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 9,
+    "cka_l24": 0.26479825377464294,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 10,
+    "cka_l24": 0.4014001488685608,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 11,
+    "cka_l24": 0.4202359616756439,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 12,
+    "cka_l24": 0.2979264259338379,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 13,
+    "cka_l24": 0.2988736629486084,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 14,
+    "cka_l24": 0.278676301240921,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 15,
+    "cka_l24": 0.3136601448059082,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 16,
+    "cka_l24": 0.3025990426540375,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 17,
+    "cka_l24": 0.4467737674713135,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 18,
+    "cka_l24": 0.2991768717765808,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 7,
+    "prompt_category": "strategy",
+    "completion_idx": 19,
+    "cka_l24": 0.2808505594730377,
+    "coherence": 3.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 0,
+    "cka_l24": 0.30664631724357605,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 1,
+    "cka_l24": 0.32056182622909546,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 2,
+    "cka_l24": 0.2718234956264496,
+    "coherence": 5.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 3,
+    "cka_l24": 0.34226131439208984,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 4,
+    "cka_l24": 0.3081229329109192,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 5,
+    "cka_l24": 0.2965536415576935,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 6,
+    "cka_l24": 0.3423544764518738,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 7,
+    "cka_l24": 0.25768470764160156,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 8,
+    "cka_l24": 0.295606404542923,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 9,
+    "cka_l24": 0.25494346022605896,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 10,
+    "cka_l24": 0.26972734928131104,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 11,
+    "cka_l24": 0.4251944124698639,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 12,
+    "cka_l24": 0.34320059418678284,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 13,
+    "cka_l24": 0.34324637055397034,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 14,
+    "cka_l24": 0.2799987196922302,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 15,
+    "cka_l24": 0.3033619821071625,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 16,
+    "cka_l24": 0.4233779311180115,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 17,
+    "cka_l24": 0.270889014005661,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 18,
+    "cka_l24": 0.4260646402835846,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 8,
+    "prompt_category": "strategy",
+    "completion_idx": 19,
+    "cka_l24": 0.2747947871685028,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 0,
+    "cka_l24": 0.2869969308376312,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 1,
+    "cka_l24": 0.26009151339530945,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 2,
+    "cka_l24": 0.3843037784099579,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 3,
+    "cka_l24": 0.25903838872909546,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 4,
+    "cka_l24": 0.2887708842754364,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 5,
+    "cka_l24": 0.3609519600868225,
+    "coherence": 1.0,
+    "extension": 3.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 6,
+    "cka_l24": 0.28706926107406616,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 7,
+    "cka_l24": 0.2771261930465698,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 8,
+    "cka_l24": 0.2704630196094513,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 9,
+    "cka_l24": 0.2741740345954895,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 10,
+    "cka_l24": 0.24098800122737885,
+    "coherence": 3.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 11,
+    "cka_l24": 0.40498143434524536,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 12,
+    "cka_l24": 0.3492162525653839,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 13,
+    "cka_l24": 0.4081004559993744,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 14,
+    "cka_l24": 0.3005034625530243,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 15,
+    "cka_l24": 0.28101009130477905,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 16,
+    "cka_l24": 0.280540406703949,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 17,
+    "cka_l24": 0.2649828791618347,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 18,
+    "cka_l24": 0.27387136220932007,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 13,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 19,
+    "cka_l24": 0.25764164328575134,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 0,
+    "cka_l24": 0.329943984746933,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 1,
+    "cka_l24": 0.46210163831710815,
+    "coherence": 1.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 2,
+    "cka_l24": 0.3451631963253021,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 3,
+    "cka_l24": 0.3155963718891144,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 4,
+    "cka_l24": 0.3535695970058441,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 5,
+    "cka_l24": 0.34158480167388916,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 6,
+    "cka_l24": 0.2962939143180847,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 7,
+    "cka_l24": 0.3349795341491699,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 8,
+    "cka_l24": 0.3797830045223236,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 9,
+    "cka_l24": 0.33814388513565063,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 10,
+    "cka_l24": 0.313139408826828,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 11,
+    "cka_l24": 0.32062971591949463,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 12,
+    "cka_l24": 0.38296082615852356,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 13,
+    "cka_l24": 0.2826918661594391,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 14,
+    "cka_l24": 0.27784067392349243,
+    "coherence": 5.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 15,
+    "cka_l24": 0.3279999792575836,
+    "coherence": 1.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 16,
+    "cka_l24": 0.2831183075904846,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 17,
+    "cka_l24": 0.30488553643226624,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 18,
+    "cka_l24": 0.4151737689971924,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 14,
+    "prompt_category": "food_hospitality",
+    "completion_idx": 19,
+    "cka_l24": 0.4715162515640259,
+    "coherence": 2.0,
+    "extension": 3.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 0,
+    "cka_l24": 0.2689046263694763,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 1,
+    "cka_l24": 0.3630960285663605,
+    "coherence": 3.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 2,
+    "cka_l24": 0.2617342174053192,
+    "coherence": 3.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 3,
+    "cka_l24": 0.3849601745605469,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 4,
+    "cka_l24": 0.274815171957016,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 5,
+    "cka_l24": 0.28013086318969727,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 6,
+    "cka_l24": 0.27073362469673157,
+    "coherence": 5.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 7,
+    "cka_l24": 0.2773558497428894,
+    "coherence": 5.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 8,
+    "cka_l24": 0.4023940861225128,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 9,
+    "cka_l24": 0.4053950607776642,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 10,
+    "cka_l24": 0.4250791072845459,
+    "coherence": 2.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 11,
+    "cka_l24": 0.3989872932434082,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 12,
+    "cka_l24": 0.2835521996021271,
+    "coherence": 5.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 13,
+    "cka_l24": 0.3041834235191345,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 14,
+    "cka_l24": 0.29862305521965027,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 15,
+    "cka_l24": 0.2781895101070404,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 16,
+    "cka_l24": 0.26750683784484863,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 17,
+    "cka_l24": 0.27390792965888977,
+    "coherence": 2.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 18,
+    "cka_l24": 0.4089157283306122,
+    "coherence": 5.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 19,
+    "prompt_category": "outdoor",
+    "completion_idx": 19,
+    "cka_l24": 0.2800612151622772,
+    "coherence": 2.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 0,
+    "cka_l24": 0.22414515912532806,
+    "coherence": 4.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 1,
+    "cka_l24": 0.21118921041488647,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 2,
+    "cka_l24": 0.18934452533721924,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 3,
+    "cka_l24": 0.22073394060134888,
+    "coherence": 3.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 4,
+    "cka_l24": 0.21344289183616638,
+    "coherence": 3.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 5,
+    "cka_l24": 0.40799933671951294,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 6,
+    "cka_l24": 0.324619323015213,
+    "coherence": 4.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 7,
+    "cka_l24": 0.24389073252677917,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 8,
+    "cka_l24": 0.20343342423439026,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 9,
+    "cka_l24": 0.2208266258239746,
+    "coherence": 3.0,
+    "extension": 3.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 10,
+    "cka_l24": 0.21598617732524872,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 11,
+    "cka_l24": 0.22534875571727753,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 12,
+    "cka_l24": 0.24596810340881348,
+    "coherence": 2.0,
+    "extension": 3.0,
+    "drift": 0.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 13,
+    "cka_l24": 0.28253141045570374,
+    "coherence": 1.0,
+    "extension": 1.0,
+    "drift": 1.0,
+    "n_raters": 1
+  },
+  {
+    "prompt_id": 25,
+    "prompt_category": "generic_control",
+    "completion_idx": 14,
+    "cka_l24": 0.1899603307247162,
+    "coherence": 3.0,
+    "extension": 2.0,
+    "drift": 0.0,
+    "n_raters": 1
+  }
+]
