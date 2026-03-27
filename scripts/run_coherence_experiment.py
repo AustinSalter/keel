@@ -58,13 +58,24 @@ def main():
         print(f"\nPrompt {prompt['id']} ({prompt['category']}) [{i+1}/{len(remaining)}]")
         print(f"  {prompt['text'][:60]}...")
 
-        batch_results = fn.remote(
-            model_id=args.model_id,
-            layer_indices=SWEEP_LAYERS,
-            soul_text=soul_text,
-            prompts=[prompt],
-            completions_per_prompt=args.completions,
-        )
+        # Run in batches of 5 to stay within Modal timeout
+        batch_size = 5
+        batch_results = []
+        for batch_start in range(0, args.completions, batch_size):
+            batch_n = min(batch_size, args.completions - batch_start)
+            print(f"  Batch {batch_start//batch_size + 1} ({batch_n} completions)...")
+            sub_results = fn.remote(
+                model_id=args.model_id,
+                layer_indices=SWEEP_LAYERS,
+                soul_text=soul_text,
+                prompts=[prompt],
+                completions_per_prompt=batch_n,
+                max_new_tokens=200,
+            )
+            # Fix completion indices to be globally unique
+            for r in sub_results:
+                r["completion_idx"] = batch_start + r["completion_idx"]
+            batch_results.extend(sub_results)
 
         # Append to JSONL immediately
         with open(jsonl_path, "a") as f:

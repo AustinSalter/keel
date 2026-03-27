@@ -1016,8 +1016,8 @@ def coherence_experiment(
     layer_indices: list[int],
     soul_text: str,
     prompts: list[dict],  # [{"id": int, "text": str, "category": str}, ...]
-    completions_per_prompt: int = 20,
-    max_new_tokens: int = 512,
+    completions_per_prompt: int = 5,
+    max_new_tokens: int = 200,
     temperature: float = 0.8,
 ) -> list[dict]:
     """Coherence correlation experiment: SOUL context + prompts x completions, computing CKA at each step.
