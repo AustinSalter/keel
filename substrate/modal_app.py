@@ -507,3 +507,230 @@ def pilot_capture(
         "rotation": rotation_results,
         "explained_variance": evr_results,
     }
+
+
+@app.function(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=1800,
+)
+def deep_analysis(
+    model_id: str,
+    layer_indices: list[int],
+    prompts: dict[str, str],
+    payloads: dict[str, str],
+) -> dict:
+    """Deep analysis: cross-prompt geometry, context decomposition, EVR, text generation.
+
+    Args:
+        prompts: {"ai_ml": "...", "food": "...", "krebs": "..."}
+        payloads: {"p_null": "", "p1": "...", "p_phello_food": "...", "p_phello_krebs": "..."}
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+    import torch
+
+    from substrate.capture import compute_pca_basis
+    from substrate.hooks import ActivationCollector
+    from substrate.rotation import compute_rotation_summary
+
+    model, tokenizer = load_model(model_id)
+    device = next(model.parameters()).device
+    k = 10
+
+    def capture(text: str) -> dict[str, np.ndarray]:
+        """Run forward pass and capture activations at all target layers."""
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        collector = ActivationCollector()
+        collector.register(model, layer_indices=layer_indices)
+        with torch.no_grad():
+            model(**inputs)
+        raw = collector.collect()
+        collector.remove_all()
+        return {key: val.numpy() for key, val in raw.items()}
+
+    def pca_at_layers(acts: dict[str, np.ndarray], max_k: int = k):
+        """Compute PCA at each layer."""
+        result = {}
+        for layer_key, act in acts.items():
+            ek = min(max_k, act.shape[0], act.shape[1])
+            if ek >= 2:
+                result[layer_key] = compute_pca_basis(act, n_components=ek)
+        return result
+
+    def rotation_dict(pca_a, pca_b):
+        """Compute rotation between two PCA results across shared layers."""
+        result = {}
+        for layer_key in pca_a:
+            if layer_key in pca_b:
+                ek = min(pca_a[layer_key].components.shape[0],
+                         pca_b[layer_key].components.shape[0])
+                rot = compute_rotation_summary(
+                    pca_a[layer_key].components[:ek],
+                    pca_b[layer_key].components[:ek],
+                )
+                result[layer_key] = {
+                    "grassmann_distance": rot.grassmann_distance,
+                    "mean_angle": rot.mean_angle,
+                    "max_angle": rot.max_angle,
+                }
+        return result
+
+    # ---- Capture all conditions ----
+
+    # P_null + each prompt (for Q1 cross-prompt comparison)
+    null_ai = capture(prompts["ai_ml"])
+    null_food = capture(prompts["food"])
+    null_krebs = capture(prompts["krebs"])
+
+    # Context-only captures (for Q3 decomposition)
+    ctx_p1 = capture(payloads["p1"])
+    ctx_phello_krebs = capture(payloads["p_phello_krebs"])
+
+    # P1 + krebs (for Q3)
+    p1_krebs = capture(f"{payloads['p1']}\n\n{prompts['krebs']}")
+
+    # P_null + krebs and P1 + krebs already captured
+    # P_phello + food (for Q5 comparison)
+    phello_food = capture(f"{payloads['p_phello_food']}\n\n{prompts['food']}")
+    p1_food = capture(f"{payloads['p1']}\n\n{prompts['food']}")
+
+    # P1 + ai (for Q5)
+    p1_ai = capture(f"{payloads['p1']}\n\n{prompts['ai_ml']}")
+
+    # ---- Q1: Cross-prompt geometry under P_null ----
+    pca_null_ai = pca_at_layers(null_ai)
+    pca_null_food = pca_at_layers(null_food)
+    pca_null_krebs = pca_at_layers(null_krebs)
+
+    q1 = {
+        "ai_vs_food": rotation_dict(pca_null_ai, pca_null_food),
+        "ai_vs_krebs": rotation_dict(pca_null_ai, pca_null_krebs),
+        "food_vs_krebs": rotation_dict(pca_null_food, pca_null_krebs),
+    }
+
+    # ---- Q2: Generate text with and without context for Krebs ----
+    gen_kwargs = dict(max_new_tokens=200, temperature=0.1, do_sample=True)
+
+    def generate(text: str) -> str:
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        with torch.no_grad():
+            output = model.generate(**inputs, **gen_kwargs)
+        # Decode only the new tokens
+        new_tokens = output[0][inputs["input_ids"].shape[1]:]
+        return tokenizer.decode(new_tokens, skip_special_tokens=True)
+
+    krebs_text = prompts["krebs"]
+    q2 = {
+        "p_null": generate(krebs_text),
+        "p1": generate(f"{payloads['p1']}\n\n{krebs_text}"),
+        "p_phello": generate(f"{payloads['p_phello_krebs']}\n\n{krebs_text}"),
+    }
+
+    # ---- Q3: Context vs prompt decomposition ----
+    # For the Krebs prompt with P1 context:
+    # A = context-only geometry, B = prompt-only geometry, C = context+prompt geometry
+    # Context share = how much of C is explained by A vs B
+    pca_ctx_p1 = pca_at_layers(ctx_p1)
+    pca_null_krebs_ = pca_at_layers(null_krebs)  # prompt-only
+    pca_p1_krebs = pca_at_layers(p1_krebs)       # context+prompt
+
+    q3 = []
+    for layer_key in pca_p1_krebs:
+        if layer_key not in pca_ctx_p1 or layer_key not in pca_null_krebs_:
+            continue
+        ek = min(
+            pca_ctx_p1[layer_key].components.shape[0],
+            pca_null_krebs_[layer_key].components.shape[0],
+            pca_p1_krebs[layer_key].components.shape[0],
+        )
+        rot_ctx_full = compute_rotation_summary(
+            pca_ctx_p1[layer_key].components[:ek],
+            pca_p1_krebs[layer_key].components[:ek],
+        )
+        rot_prm_full = compute_rotation_summary(
+            pca_null_krebs_[layer_key].components[:ek],
+            pca_p1_krebs[layer_key].components[:ek],
+        )
+        rot_ctx_prm = compute_rotation_summary(
+            pca_ctx_p1[layer_key].components[:ek],
+            pca_null_krebs_[layer_key].components[:ek],
+        )
+        # Context share: how much closer is context to full vs prompt to full
+        total = rot_ctx_full.grassmann_distance + rot_prm_full.grassmann_distance
+        ctx_share = 1.0 - (rot_ctx_full.grassmann_distance / total) if total > 0 else 0.5
+
+        q3.append({
+            "prompt": "krebs",
+            "layer": layer_key,
+            "context_to_full": rot_ctx_full.grassmann_distance,
+            "prompt_to_full": rot_prm_full.grassmann_distance,
+            "context_to_prompt": rot_ctx_prm.grassmann_distance,
+            "context_share": ctx_share,
+        })
+
+    # Also do for AI/ML prompt
+    pca_p1_ai = pca_at_layers(p1_ai)
+    for layer_key in pca_p1_ai:
+        if layer_key not in pca_ctx_p1 or layer_key not in pca_null_ai:
+            continue
+        pca_nai = pca_at_layers(null_ai)
+        ek = min(
+            pca_ctx_p1[layer_key].components.shape[0],
+            pca_nai[layer_key].components.shape[0],
+            pca_p1_ai[layer_key].components.shape[0],
+        )
+        rot_ctx_full = compute_rotation_summary(
+            pca_ctx_p1[layer_key].components[:ek],
+            pca_p1_ai[layer_key].components[:ek],
+        )
+        rot_prm_full = compute_rotation_summary(
+            pca_nai[layer_key].components[:ek],
+            pca_p1_ai[layer_key].components[:ek],
+        )
+        rot_ctx_prm = compute_rotation_summary(
+            pca_ctx_p1[layer_key].components[:ek],
+            pca_nai[layer_key].components[:ek],
+        )
+        total = rot_ctx_full.grassmann_distance + rot_prm_full.grassmann_distance
+        ctx_share = 1.0 - (rot_ctx_full.grassmann_distance / total) if total > 0 else 0.5
+
+        q3.append({
+            "prompt": "ai_ml",
+            "layer": layer_key,
+            "context_to_full": rot_ctx_full.grassmann_distance,
+            "prompt_to_full": rot_prm_full.grassmann_distance,
+            "context_to_prompt": rot_ctx_prm.grassmann_distance,
+            "context_share": ctx_share,
+        })
+
+    # ---- Q5: EVR across conditions ----
+    conditions = {
+        "p_null + ai_ml": pca_null_ai,
+        "p_null + food": pca_null_food,
+        "p_null + krebs": pca_null_krebs,
+        "p1 + ai_ml": pca_p1_ai,
+        "p1 + food": pca_at_layers(p1_food),
+        "p1 + krebs": pca_p1_krebs,
+        "p_phello + food": pca_at_layers(phello_food),
+        "p1_context_only": pca_ctx_p1,
+    }
+
+    q5 = {}
+    for cond_name, pca_data in conditions.items():
+        q5[cond_name] = {}
+        for layer_key, pca_result in pca_data.items():
+            q5[cond_name][layer_key] = float(pca_result.explained_variance_ratio.sum())
+
+    return {
+        "q1_cross_prompt": q1,
+        "q2_text_comparison": q2,
+        "q3_decomposition": q3,
+        "q5_evr": q5,
+    }
