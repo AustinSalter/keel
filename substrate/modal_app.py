@@ -1120,3 +1120,99 @@ def coherence_experiment(
 
     print(f"  Experiment complete: {len(results)} results collected")
     return results
+
+
+@app.function(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=3600,
+)
+def recompute_cka_from_prompt_ref(
+    model_id: str,
+    layer_indices: list[int],
+    soul_text: str,
+    completions: list[dict],
+) -> list[dict]:
+    """Recompute CKA using context+prompt as reference (not context-only).
+
+    For each completion, computes:
+    - CKA(context+prompt activations, context+prompt+completion activations)
+
+    This measures whether the response extends smoothly from the question-primed
+    state, rather than whether it stays near the context-only state.
+
+    Args:
+        completions: list of {"prompt_id", "prompt_text", "completion_idx", "completion_text"}
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+    import torch
+
+    from substrate.hooks import ActivationCollector
+
+    model, tokenizer = load_model(model_id)
+    device = next(model.parameters()).device
+
+    def capture(text: str) -> dict[str, np.ndarray]:
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        collector = ActivationCollector()
+        collector.register(model, layer_indices=layer_indices)
+        with torch.no_grad():
+            model(**inputs)
+        raw = collector.collect()
+        collector.remove_all()
+        return {key: val.numpy() for key, val in raw.items()}
+
+    def feature_cka(act_a: np.ndarray, act_b: np.ndarray) -> float:
+        a = act_a - act_a.mean(axis=0)
+        b = act_b - act_b.mean(axis=0)
+        feat_a = a.T @ a / a.shape[0]
+        feat_b = b.T @ b / b.shape[0]
+        numerator = np.linalg.norm(feat_a @ feat_b, "fro") ** 2
+        denom = np.linalg.norm(feat_a, "fro") * np.linalg.norm(feat_b, "fro")
+        return float(numerator / (denom ** 2)) if denom > 0 else 0.0
+
+    # Cache context+prompt activations per prompt (one capture per prompt)
+    prompt_ref_cache: dict[int, dict[str, np.ndarray]] = {}
+
+    results = []
+    for i, comp in enumerate(completions):
+        pid = comp["prompt_id"]
+        prompt_text = comp["prompt_text"]
+        completion_text = comp["completion_text"]
+
+        # Capture context+prompt reference (once per prompt)
+        if pid not in prompt_ref_cache:
+            ref_text = f"{soul_text}\n\n{prompt_text}"
+            prompt_ref_cache[pid] = capture(ref_text)
+            print(f"  Cached reference for prompt {pid}")
+
+        acts_ref = prompt_ref_cache[pid]
+
+        # Capture context+prompt+completion
+        full_text = f"{soul_text}\n\n{prompt_text}{completion_text}"
+        acts_full = capture(full_text)
+
+        # Compute CKA at each layer
+        entry = {
+            "prompt_id": pid,
+            "completion_idx": comp["completion_idx"],
+        }
+        for idx in layer_indices:
+            layer_key = f"layer_{idx}"
+            if layer_key in acts_ref and layer_key in acts_full:
+                entry[f"cka_prompt_ref_{layer_key}"] = feature_cka(
+                    acts_ref[layer_key], acts_full[layer_key]
+                )
+        results.append(entry)
+
+        if (i + 1) % 10 == 0:
+            print(f"  Progress: {i + 1}/{len(completions)}")
+
+    print(f"  Done: {len(results)} CKA values recomputed")
+    return results
