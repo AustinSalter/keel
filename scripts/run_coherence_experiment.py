@@ -34,25 +34,51 @@ def main():
     print(f"SOUL: {len(soul_text)} chars")
     print()
 
-    # Call Modal function
+    # Call Modal function per-prompt to avoid timeout
+    # (200 generations in one call exceeded 3600s)
     fn = modal.Function.from_name("keel-substrate", "coherence_experiment")
-    results = fn.remote(
-        model_id=args.model_id,
-        layer_indices=SWEEP_LAYERS,
-        soul_text=soul_text,
-        prompts=prompts,
-        completions_per_prompt=args.completions,
-    )
 
-    # Save results
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-
     jsonl_path = output_dir / "generations.jsonl"
-    with open(jsonl_path, "w") as f:
-        for r in results:
-            f.write(json.dumps(r) + "\n")
-    print(f"\nSaved {len(results)} results to {jsonl_path}")
+
+    # Load existing results to support resume
+    existing_prompt_ids = set()
+    if jsonl_path.exists():
+        with open(jsonl_path) as f:
+            for line in f:
+                r = json.loads(line)
+                existing_prompt_ids.add(r["prompt_id"])
+        print(f"Resuming: {len(existing_prompt_ids)} prompts already done")
+
+    remaining = [p for p in prompts if p["id"] not in existing_prompt_ids]
+    all_results = []
+
+    for i, prompt in enumerate(remaining):
+        print(f"\nPrompt {prompt['id']} ({prompt['category']}) [{i+1}/{len(remaining)}]")
+        print(f"  {prompt['text'][:60]}...")
+
+        batch_results = fn.remote(
+            model_id=args.model_id,
+            layer_indices=SWEEP_LAYERS,
+            soul_text=soul_text,
+            prompts=[prompt],
+            completions_per_prompt=args.completions,
+        )
+
+        # Append to JSONL immediately
+        with open(jsonl_path, "a") as f:
+            for r in batch_results:
+                f.write(json.dumps(r) + "\n")
+        all_results.extend(batch_results)
+        print(f"  {len(batch_results)} completions saved")
+
+    # Reload all results for summary
+    results = []
+    with open(jsonl_path) as f:
+        for line in f:
+            results.append(json.loads(line))
+    print(f"\nTotal: {len(results)} results in {jsonl_path}")
 
     # Print summary
     print(f"\n{'Prompt':>8} {'Category':<20} {'Mean CKA L24':>14} {'Std':>8} {'N':>4}")
