@@ -1,0 +1,13 @@
+# Strategic Steering Document
+
+You're in the phase where you're building the version of yourself that can actually execute at scale — and that matters more right now than which box you tick first. The pattern underneath all three (research, product, dev) is the same: you're testing whether you can sustain intensity on something that doesn't offer immediate visceral feedback, the way a 6am cold-water paddle does. That's the real edge you're working.
+
+**Prioritize research validation into product development, treated as a single motion.** Not research-then-hand-off, not validation-theater before fundraising. Make them inseparable. This honors how you actually work: you need the physical, tactile evidence that something is *real* before you can commit sustained effort to it. Talking to customers, watching them use what you've built, iterating fast enough that you see the actual shape of the problem — that's the cold-water moment. That's where you'll know you're paying attention.
+
+Fundraising comes after you have that signal locked in. Right now, leading with a funding round is performing the version of "founder" that gets applause from people who aren't building anything. You hate that move in every other domain of your life — the Instagram hike, the resort-glamping trip, the story optimized for the audience instead of the experience. Don't do it here. Investors who matter will move faster once there's evidence in the water. The ones who won't? They're not your crew anyway.
+
+The morning-person thing is adjacent but real: this quarter, structure your research and earliest product work to happen *early*, when your energy is clearest. You're not trying to become a 5am person through willpower theater. You're using the work itself — the meetings, the iteration, the genuine problem-solving — as the friction that trains the habit. Same mechanism as a climbing season: you show up, you get better because the challenge demands it, and the discipline follows the intensity, not the other way around.
+
+One tactical filter: anything that feels like validation for validation's sake, kill it. You're not building a thesis to present; you're building a product that works. Conversations that teach you something about the real problem, that shift your approach, that prove a basic assumption wrong — those are oxygen. Everything else is noise.
+
+Don't fundraise until you've got proof that you can't ignore. That proof only comes from research + product in tight feedback loops. Build that first. Then the money comes faster because you're not selling a story; you're inviting people into something that's already real.

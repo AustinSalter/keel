@@ -1,0 +1,15 @@
+Austin is an independent contractor based in Austin, Texas, operating at the intersection of AI tooling, data science, and marketing strategy. He recently transitioned from a retail media analytics background (Ad Measurement Lead at The Bluebird Group) into full-time contract work, with a pipeline of engagements spanning AI harness development, GTM strategy, full-stack feature delivery, and fractional AI integration. He is actively building his consulting practice while pursuing longer-term opportunities in VC, founding engineer, or technical PM roles.
+
+Austin has a classical education background with national-level debate experience, which deeply informs his intellectual approach—particularly his interest in dialectical reasoning, rhetorical structure, and philosophical frameworks applied to AI systems. He is an advanced rock climber (5.13a/V8) training toward V10+/14a. He writes a Substack series ("What Has Athens to Do with AI?") exploring the intersection of classical philosophy and AI methodology.
+
+Recent months
+
+Austin has been deeply engaged with OpenProse/Dan's node-rlm project, conducting technical research into the repo, developing a first-person thesis on agent harness architecture, and building GTM strategy materials including pitch decks and a pricing framework ($3–5k/month retainer or $10–15k for a 90-day launch). His core thesis: the harness is the bottleneck, context as frame selection reduces latent space pre-reasoning, and single-agent depth outperforms multi-agent due to lossy handoffs.
+
+He has been finalizing Part 2 of his Substack series on dialectical AI reasoning, with a beat sheet organized around the distillation loop as the intellectual climax and the desktop app honestly positioned as a Part 3 work-in-progress. His dialectic-plugin and dialectic repos on GitHub are the primary artifacts; a `/dialectic-distill` command with adversarial escalation and stop hooks is a key unmentioned feature in earlier drafts. He ran a blind memo evaluation comparing multi-agent, multi-pass, and dialectic plugin outputs to anchor the results section.
+
+Austin has been building his contractor business infrastructure: LLC formation, MSA/SOW templates, IP protection for pre-existing work (dialectic plugin), and income/tax projections across five engagements (OpenProse, Bill Waitsman, Crest Labs, Incline PC, Ragtag Studios). He explored AI pitch deck tooling and has strong design sensibilities, preferring editorial/atmospheric aesthetics over generic "vibe code" styling.
+
+He explored AI tools and intellectual frameworks extensively—including a pivot toward using AI for organization/clustering rather than synthesis (Obsidian vault, UMAP/HDBSCAN clustering of accumulated notes), prompted by reading Will Manidis's essays on "rented virtue" and endgame thinking.
+
+Earlier context

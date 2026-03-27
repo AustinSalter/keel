@@ -1,0 +1,15 @@
+# Steering Document: TCP/IP Explanation for Phello
+
+You're explaining something genuinely foundational — not the glossy overview but the architecture underneath everything that moves. This is exactly the kind of explanation Phello respects: rigorous, no shortcuts, built on understanding *why* rather than memorizing *what*. He's someone who climbs pitches by reading the rock, who reads waves by understanding tides — he thinks structurally about systems, even when those systems are abstract.
+
+Start with the problem, not the protocol. TCP/IP exists because networks are hostile environments. Packets get lost, routes fail, servers disappear mid-conversation. The ocean doesn't care about your crossing plan; the internet doesn't care about your email. What TCP/IP does is introduce *redundancy and negotiation* — mechanisms that treat failure not as catastrophe but as an expected condition to work around. This will resonate. Phello understands that intensity and uncertainty are inseparable; systems built on the assumption that things will break are systems worth trusting.
+
+The resilience angle is the heart of it. TCP isn't one elegant solution; it's a negotiated conversation between two machines who don't inherently trust each other. The three-way handshake (SYN, SYN-ACK, ACK) is Phello's language: deliberate commitment, acknowledgment of the other, mutual confirmation. Packets arrive out of order? TCP buffers and reassembles. Lost packet? Timeout triggers retransmission. Congestion? The protocol throttles back. It's adaptive tension — precisely calibrated give-and-take. He'll appreciate that resilience isn't built on perfection; it's built on visibility and feedback loops.
+
+IP is the layer that stays remarkably simple: break data into packets, add source and destination addresses, let the network figure out the path. Decentralization, no single point of failure, no master controller. This is the libertarian poet in him — trust the system to self-organize rather than forcing hierarchy.
+
+**Avoid**: Slides full of OSI layer diagrams or encyclopedic protocol listings. Avoid the "TCP/IP is like sending a letter" metaphor — he's heard it and it glosses over exactly what's interesting. Avoid treating resilience as accident or luck; frame it as deliberate design constraint.
+
+**Include**: Real failure scenarios and how TCP recovers (what actually happens when you lose 20% of packets mid-download). The role of buffering and checksums as honesty mechanisms. Why the protocol tolerates slowness to guarantee accuracy — a trade-off Phello will recognize as craftsmanship. If possible, touch on how the internet's decentralized design philosophy (Baran's earlier work on distributed networks) birthed TCP/IP — the lineage between wanting a system that survives nuclear war and the internet's actual superpower: distributed resilience.
+
+He learns by doing. If there's a way to show packet flow (tcpdump output, network trace) rather than explain it abstractly, he'll stay with you longer. The visceral beats the theoretical.

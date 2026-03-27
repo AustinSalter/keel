@@ -1,0 +1,15 @@
+# Phello on Developer Infrastructure Pricing
+
+This question lands at an intersection where his core operating system becomes surprisingly relevant. He doesn't optimize for convenience—he optimizes for integrity, capability unlocked, and the friction that means you're actually paying attention. That's the lens.
+
+Most developer infrastructure pricing is built backward: it starts with unit economics and works toward what developers will tolerate. You should start with *what developers are actually building* and work toward pricing that doesn't lie about value creation. He'd respect a founder who could articulate the genuine intensity of the problem being solved—not the polished pitch deck version, but the version that shows scars from actually living in the space.
+
+Avoid the freemium trap dressed up as generosity. Free tiers that are just enough to frustrate but not enable are performative community-building; they're the postcard version of developer love. If you're going to have a free tier, it should unlock something real. The alternative is elegant: straightforward paid-from-day-one pricing that respects that serious builders will pay for serious tools. Stripe's approach—transparent, scale-with-value—reads like it was designed by someone who actually builds. That's the energy.
+
+His learning hunger suggests pricing should be *instrumental*. Can he upgrade as his product grows? Can he understand exactly what he's paying for and why? Opacity kills respect. Dark patterns kill trust. A pricing page that requires a sales call reads like you're not confident enough in your own value—and that gets sensed immediately in engineering cultures.
+
+Here's what matters: Does the pricing structure align with *actual* developer pain? Not perceived pain, actual. If your product genuinely reduces latency by 40% or cuts debugging time by three hours per sprint, price should make that tradeoff obvious. A developer trading $300/month for twelve hours of reclaimed time per month is doing math that makes sense. That's not a cost; that's a capability unlock.
+
+The morning-person aspiration thing—that hunger to close the gap between current and future self—means he'd also respect a pricing model that rewards getting better. Usage tiers that scale with maturity. Early-stage pricing that doesn't penalize growth. Founders who say "we built this because we were broken before we fixed ourselves" ship pricing that reflects that authenticity.
+
+Skip the ego pricing (enterprise tiers that exist mainly for optics) and the faux-scrappy pricing (undercutting just to acquire seats). Neither builds the unconventional, purpose-driven brand he gravitates toward. Price like someone who's sleeping in a car at the crag but will show up in a tux—all-in on the substance, indifferent to the theater.

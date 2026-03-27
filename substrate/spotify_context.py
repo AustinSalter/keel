@@ -21,7 +21,7 @@ from spotipy.oauth2 import SpotifyOAuth
 def create_oauth(
     client_id: str,
     client_secret: str,
-    redirect_uri: str = "http://localhost:8888/callback",
+    redirect_uri: str = "http://127.0.0.1:8888/callback",
     cache_path: Optional[str] = None,
 ) -> SpotifyOAuth:
     """Create a SpotifyOAuth manager with the read scopes required by keel.

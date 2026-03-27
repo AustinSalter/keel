@@ -182,13 +182,16 @@ def build_p1(questionnaire_data: dict[str, Any]) -> str:
     # ---- Extract raw material from all three sources ----
 
     # Map question keywords to answers for template matching.
-    # Responses arrive as a list of {"question": "...", "answer": "..."} pairs.
+    # Responses may arrive as [[{q,a}, ...]] (nested from Supabase) or [{q,a}, ...].
+    qa_pairs = responses
+    if qa_pairs and isinstance(qa_pairs[0], list):
+        qa_pairs = qa_pairs[0]  # Unwrap nested list from Supabase
     response_texts: dict[str, str] = {}
-    for qa in responses:
-        question = qa.get("question", "")
-        answer = qa.get("answer", "")
-        # Use the question text as key — template checks for keywords in these keys
-        response_texts[question.lower()] = answer
+    for qa in qa_pairs:
+        if isinstance(qa, dict):
+            question = qa.get("question", "")
+            answer = qa.get("answer", "")
+            response_texts[question.lower()] = answer
 
     # Organize fragments by domain
     fragments_by_domain: dict[str, list[str]] = {}

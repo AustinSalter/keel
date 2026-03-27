@@ -1,0 +1,11 @@
+# Steering Document: Substrate Geometry Pitch
+
+You're walking into this meeting carrying something most pitches don't: a genuine tension between rigor and rawness, between mathematical elegance and real-world friction. That's your asymmetric advantage, and the investor across the table will feel it if you let it breathe.
+
+The metric you lead with should be *adoption velocity among practitioners who have skin in the game*—not DAUs or enterprise deals, but the rate at which people doing actual work in the domain are building substrate geometry into their workflows without being forced to. This matters because you already know that cosmetic metrics lie. You've slept in your car. You've felt the difference between performing competence and actually possessing it. Your skeptical investor has too, whether they know it or not.
+
+Here's the frame: if substrate geometry works, it should reduce iteration cycles for people solving hard problems. Measurable, visceral, no speculation required. Show the before-and-after on design cycles, debugging sessions, or architectural decisions—whatever domain you're operating in. The best metric is one where the person using your tool feels the difference in their body the same way you feel solid rock or overhead water. Faster feedback. Cleaner decisions. Less waste motion. That's not marketing; that's evidence.
+
+Avoid the trap of polishing this into inevitability. Your investor will smell that immediately. Instead, show the messy substrate—the crags where adoption hasn't happened, the teams still grinding with legacy approaches, the specific friction points your metric actually addresses. The strength of your position is that you're not selling a story about the future; you're showing a signal that's already emerging in the present, in the hands of people who care about results over narrative.
+
+Lead with one number that's hard-won and unglamorous. The vulnerability is the credential.

@@ -72,11 +72,30 @@ def main():
     phello_dir.mkdir(exist_ok=True)
 
     print(f"Generating {len(prompts)} P_phello steering documents...")
+    import time
+    failed = []
     for prompt in prompts:
         pid = f"prompt_{prompt['id']:02d}"
-        steering = fetch_phello_synthesis(args.service_key, prompt["text"])
-        (phello_dir / f"{pid}.txt").write_text(steering)
-        print(f"  {pid}: {len(steering)} chars")
+        out_path = phello_dir / f"{pid}.txt"
+        if out_path.exists() and out_path.stat().st_size > 0:
+            print(f"  {pid}: cached ({out_path.stat().st_size} chars)")
+            continue
+        for attempt in range(3):
+            try:
+                steering = fetch_phello_synthesis(args.service_key, prompt["text"])
+                out_path.write_text(steering)
+                print(f"  {pid}: {len(steering)} chars")
+                break
+            except Exception as e:
+                if attempt < 2:
+                    wait = 5 * (attempt + 1)
+                    print(f"  {pid}: error ({e}), retrying in {wait}s...")
+                    time.sleep(wait)
+                else:
+                    print(f"  {pid}: FAILED after 3 attempts ({e})")
+                    failed.append(pid)
+    if failed:
+        print(f"\n  WARNING: {len(failed)} P_phello payloads failed: {failed}")
 
     # 6. Print token count summary
     print("\n=== Token Count Summary ===")
