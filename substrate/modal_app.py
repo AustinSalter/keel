@@ -893,3 +893,108 @@ def evr_elbow_analysis(
         "pca_gd_by_k": pca_gd_by_k,
         "full_dimensional": full_dim,
     }
+
+
+@app.function(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=1800,
+)
+def cka_diagnostic(
+    model_id: str,
+    layer_indices: list[int],
+    prompts: dict[str, str],
+    contexts: dict[str, str],
+) -> dict:
+    """CKA diagnostic: compare context-only vs context+prompt at each layer.
+
+    For each (context, prompt) pair, captures activations for:
+    1. Context alone
+    2. Context + prompt combined
+
+    Then computes CKA and cosine similarity between them at each layer.
+    This measures how much the prompt changes the representation established
+    by the context — the over-anchoring / healthy-blend / override signal.
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+    import torch
+
+    from substrate.hooks import ActivationCollector
+
+    model, tokenizer = load_model(model_id)
+    device = next(model.parameters()).device
+
+    def capture(text: str) -> dict[str, np.ndarray]:
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        collector = ActivationCollector()
+        collector.register(model, layer_indices=layer_indices)
+        with torch.no_grad():
+            model(**inputs)
+        raw = collector.collect()
+        collector.remove_all()
+        return {key: val.numpy() for key, val in raw.items()}
+
+    def feature_cka(act_a: np.ndarray, act_b: np.ndarray) -> float:
+        """Feature-space CKA for matrices with different sample sizes."""
+        a = act_a - act_a.mean(axis=0)
+        b = act_b - act_b.mean(axis=0)
+        feat_a = a.T @ a / a.shape[0]
+        feat_b = b.T @ b / b.shape[0]
+        numerator = np.linalg.norm(feat_a @ feat_b, "fro") ** 2
+        denom = np.linalg.norm(feat_a, "fro") * np.linalg.norm(feat_b, "fro")
+        return float(numerator / (denom ** 2)) if denom > 0 else 0.0
+
+    def cosine_mean(act_a: np.ndarray, act_b: np.ndarray) -> float:
+        """Cosine similarity between mean activation vectors."""
+        a = act_a - act_a.mean(axis=0)
+        b = act_b - act_b.mean(axis=0)
+        mean_a = a.mean(axis=0)
+        mean_b = b.mean(axis=0)
+        dot = np.dot(mean_a, mean_b)
+        norm = np.linalg.norm(mean_a) * np.linalg.norm(mean_b)
+        return float(dot / norm) if norm > 0 else 0.0
+
+    # Map context names to prompts they should be paired with
+    # p_phello variants are query-specific, so pair them with their target prompt
+    pairings = []
+    for ctx_name, ctx_text in contexts.items():
+        for prompt_name, prompt_text in prompts.items():
+            # Skip mismatched phello pairings (phello_food with krebs, etc.)
+            if ctx_name.startswith("p_phello_"):
+                phello_domain = ctx_name.split("p_phello_")[1]
+                if phello_domain != prompt_name:
+                    continue
+            pairings.append((ctx_name, prompt_name, ctx_text, prompt_text))
+
+    cka_results = {}
+    cos_results = {}
+
+    for ctx_name, prompt_name, ctx_text, prompt_text in pairings:
+        key = f"{ctx_name}|{prompt_name}"
+        print(f"  Capturing {key}...")
+
+        # Context-only activations
+        acts_ctx = capture(ctx_text)
+
+        # Context + prompt activations
+        full_text = f"{ctx_text}\n\n{prompt_text}"
+        acts_full = capture(full_text)
+
+        cka_results[key] = {}
+        cos_results[key] = {}
+
+        for layer_key in acts_ctx:
+            if layer_key in acts_full:
+                cka_results[key][layer_key] = feature_cka(acts_ctx[layer_key], acts_full[layer_key])
+                cos_results[key][layer_key] = cosine_mean(acts_ctx[layer_key], acts_full[layer_key])
+
+    return {
+        "cka_context_vs_full": cka_results,
+        "cosine_context_vs_full": cos_results,
+    }
