@@ -734,3 +734,162 @@ def deep_analysis(
         "q3_decomposition": q3,
         "q5_evr": q5,
     }
+
+
+@app.function(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=1800,
+)
+def evr_elbow_analysis(
+    model_id: str,
+    layer_indices: list[int],
+    conditions: dict[str, dict[str, str]],
+) -> dict:
+    """EVR elbow analysis + full-dimensional comparison (CKA, cosine).
+
+    Args:
+        conditions: {"name": {"context": "...", "prompt": "..."}, ...}
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+    import torch
+    from sklearn.decomposition import PCA
+    from scipy.linalg import subspace_angles
+
+    from substrate.hooks import ActivationCollector
+
+    model, tokenizer = load_model(model_id)
+    device = next(model.parameters()).device
+
+    k_values = [10, 20, 30, 50, 100]
+
+    def capture(text: str) -> dict[str, np.ndarray]:
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        collector = ActivationCollector()
+        collector.register(model, layer_indices=layer_indices)
+        with torch.no_grad():
+            model(**inputs)
+        raw = collector.collect()
+        collector.remove_all()
+        return {key: val.numpy() for key, val in raw.items()}
+
+    # ---- Capture all conditions ----
+    activations = {}
+    for cond_name, cond in conditions.items():
+        ctx = cond["context"]
+        prompt = cond["prompt"]
+        full_text = f"{ctx}\n\n{prompt}" if ctx else prompt
+        activations[cond_name] = capture(full_text)
+        print(f"  Captured {cond_name}: seq_len={next(iter(activations[cond_name].values())).shape[0]}")
+
+    # ---- EVR curves at multiple k values ----
+    evr_curves = {}
+    for cond_name, layer_acts in activations.items():
+        evr_curves[cond_name] = {}
+        for layer_key, act in layer_acts.items():
+            seq_len = act.shape[0]
+            hidden = act.shape[1]
+            max_possible_k = min(seq_len, hidden)
+            # Run PCA at the largest k we can, then slice for smaller k values
+            actual_max_k = min(max(k_values), max_possible_k)
+            if actual_max_k < 2:
+                continue
+            pca = PCA(n_components=actual_max_k)
+            pca.fit(act)
+            cumulative = np.cumsum(pca.explained_variance_ratio_)
+            evr_curves[cond_name][layer_key] = [
+                float(cumulative[min(k, actual_max_k) - 1]) for k in k_values
+            ]
+
+    # ---- PCA Grassmann distance at multiple k values ----
+    # Compare: null vs p1, null vs p_phello, p1 vs p_phello (for food prompt)
+    comparisons = [
+        ("null_vs_p1_food", "p_null+food", "p1+food"),
+        ("null_vs_phello_food", "p_null+food", "p_phello+food"),
+        ("p1_vs_phello_food", "p1+food", "p_phello+food"),
+        ("null_vs_p1_krebs", "p_null+krebs", "p1+krebs"),
+    ]
+
+    pca_gd_by_k = {}
+    for comp_name, cond_a, cond_b in comparisons:
+        pca_gd_by_k[comp_name] = {}
+        for layer_key in activations[cond_a]:
+            if layer_key not in activations[cond_b]:
+                continue
+            act_a = activations[cond_a][layer_key]
+            act_b = activations[cond_b][layer_key]
+            max_k = min(act_a.shape[0], act_b.shape[0], act_a.shape[1], max(k_values))
+
+            pca_a = PCA(n_components=max_k)
+            pca_a.fit(act_a)
+            pca_b = PCA(n_components=max_k)
+            pca_b.fit(act_b)
+
+            gd_values = []
+            for k in k_values:
+                ek = min(k, max_k)
+                if ek < 2:
+                    gd_values.append(0.0)
+                    continue
+                angles = subspace_angles(
+                    pca_a.components_[:ek].T,
+                    pca_b.components_[:ek].T,
+                )
+                gd = float(np.sqrt(np.sum(np.sin(angles) ** 2)))
+                gd_values.append(gd)
+            pca_gd_by_k[comp_name][layer_key] = gd_values
+
+    # ---- Full-dimensional comparison ----
+    def cosine_sim_mean(act_a: np.ndarray, act_b: np.ndarray) -> float:
+        """Mean cosine similarity between centered activation matrices."""
+        a_centered = act_a - act_a.mean(axis=0)
+        b_centered = act_b - act_b.mean(axis=0)
+        # Compare the mean activation vectors
+        mean_a = a_centered.mean(axis=0)
+        mean_b = b_centered.mean(axis=0)
+        dot = np.dot(mean_a, mean_b)
+        norm = np.linalg.norm(mean_a) * np.linalg.norm(mean_b)
+        return float(dot / norm) if norm > 0 else 0.0
+
+    def linear_cka(act_a: np.ndarray, act_b: np.ndarray) -> float:
+        """Feature-space Linear CKA for activation matrices with different sample sizes.
+
+        Compares covariance structure in feature space (d x d), which is
+        independent of sequence length. CKA=1 means identical covariance
+        structure. CKA=0 means completely unrelated.
+        """
+        a = act_a - act_a.mean(axis=0)
+        b = act_b - act_b.mean(axis=0)
+
+        # Feature covariance matrices [d, d] — normalized by sample count
+        feat_a = a.T @ a / a.shape[0]
+        feat_b = b.T @ b / b.shape[0]
+
+        numerator = np.linalg.norm(feat_a @ feat_b, "fro") ** 2
+        denom = np.linalg.norm(feat_a, "fro") * np.linalg.norm(feat_b, "fro")
+        return float(numerator / (denom ** 2)) if denom > 0 else 0.0
+
+    full_dim = {"cosine_similarity": {}, "cka": {}}
+    for comp_name, cond_a, cond_b in comparisons:
+        full_dim["cosine_similarity"][comp_name] = {}
+        full_dim["cka"][comp_name] = {}
+        for layer_key in activations[cond_a]:
+            if layer_key not in activations[cond_b]:
+                continue
+            act_a = activations[cond_a][layer_key]
+            act_b = activations[cond_b][layer_key]
+            full_dim["cosine_similarity"][comp_name][layer_key] = cosine_sim_mean(act_a, act_b)
+            full_dim["cka"][comp_name][layer_key] = linear_cka(act_a, act_b)
+
+    return {
+        "k_values": k_values,
+        "evr_curves": evr_curves,
+        "pca_gd_by_k": pca_gd_by_k,
+        "full_dimensional": full_dim,
+    }
