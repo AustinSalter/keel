@@ -35,3 +35,16 @@ media/
 
 # Secrets
 data/.secrets/
+
+# Personal exports (PII)
+Austin's Claude Profile/
+Session Export.md
+SUBSTRATE_V1.md
+SPRINT_2_5_SPEC.md
+SPRINT_2_6_SPEC.md
+RAW_RESULTS_COLD_READ.md
+docs/sprint1-findings.md
+docs/superpowers/
+
+# Claude Code workspace
+.claude/dialectic/
