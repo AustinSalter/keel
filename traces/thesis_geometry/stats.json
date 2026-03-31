@@ -1,0 +1,13 @@
+{
+  "session_name": "thesis_geometry",
+  "source_file": "/Users/austinsalter/.claude/projects/-Users-austinsalter-Documents-Projects-dialectic-rl/c93a366e-c1a3-4a45-bc1b-782726a3b1d9.jsonl",
+  "turns": 103,
+  "complete_iterations": 5,
+  "estimated_tokens": 86197,
+  "thesis_modifications": 2,
+  "phases": {
+    "expansion": 5,
+    "compression": 5,
+    "critique": 5
+  }
+}

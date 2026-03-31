@@ -1,0 +1,13 @@
+{
+  "session_name": "harness_thesis",
+  "source_file": "/Users/austinsalter/.claude/projects/-Users-austinsalter-Documents-Life-AI-Study/5d7eaf4d-a332-4a2e-ba73-fd4af1dea3ea.jsonl",
+  "turns": 44,
+  "complete_iterations": 6,
+  "estimated_tokens": 40058,
+  "thesis_modifications": 3,
+  "phases": {
+    "expansion": 6,
+    "compression": 6,
+    "critique": 6
+  }
+}

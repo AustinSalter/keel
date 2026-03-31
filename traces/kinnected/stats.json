@@ -1,0 +1,13 @@
+{
+  "session_name": "kinnected",
+  "source_file": "/Users/austinsalter/.claude/projects/-Users-austinsalter-Documents-Life-Side-Project-Kinnected/dc9cec9f-b9ed-4de4-b183-8e6cd6013eaa.jsonl",
+  "turns": 168,
+  "complete_iterations": 7,
+  "estimated_tokens": 124019,
+  "thesis_modifications": 1,
+  "phases": {
+    "expansion": 8,
+    "compression": 7,
+    "critique": 7
+  }
+}

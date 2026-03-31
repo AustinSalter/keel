@@ -1216,3 +1216,424 @@ def recompute_cka_from_prompt_ref(
 
     print(f"  Done: {len(results)} CKA values recomputed")
     return results
+
+
+# ---------------------------------------------------------------------------
+# Sprint 2.5: Trace geometry analysis
+# ---------------------------------------------------------------------------
+
+@app.cls(
+    gpu="A100",
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=7200,
+    scaledown_window=120,  # Keep warm for 2 min between calls
+)
+class TraceGeometry:
+    """Persistent model container for trace geometry analysis.
+
+    Model loads once on container start. Methods can be called repeatedly
+    without reloading — eliminates cold start overhead per accumulation point.
+    """
+
+    model_id: str = "Qwen/Qwen2.5-7B"
+
+    @modal.enter()
+    def load(self):
+        import os
+
+        os.environ["HF_HOME"] = "/cache"
+
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        self._model = AutoModelForCausalLM.from_pretrained(
+            self.model_id,
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            trust_remote_code=True,
+            attn_implementation="sdpa",
+        )
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            self.model_id, trust_remote_code=True
+        )
+        self._device = next(self._model.parameters()).device
+        print(f"Model {self.model_id} loaded on {self._device}")
+
+    @modal.method()
+    def process_trace(
+        self,
+        accumulation_points: list[str],
+        layer_indices: list[int],
+        pca_k: int = 50,
+        save_activations: str | None = None,
+    ) -> dict:
+        """Process all accumulation points for one trace. Model stays loaded.
+
+        Args:
+            save_activations: If set, save new-token activation matrices as
+                compressed .npz to the Modal volume at /cache/activations/{save_activations}.npz.
+                Format: {layer_6_turn_0: array[n_new_tokens, hidden_dim], ...}
+                This is the ground truth — all metrics are derivable from these matrices.
+
+        Returns dict with per-layer CKA/EVR/Grassmann/displacement trajectories.
+        """
+        import numpy as np
+        import torch
+
+        from substrate.hooks import ActivationCollector
+        from substrate.capture import compute_pca_basis
+        from substrate.rotation import compute_rotation_summary
+
+        def capture(text: str) -> dict[str, np.ndarray]:
+            inputs = self._tokenizer(
+                text, return_tensors="pt", truncation=True, max_length=131072
+            )
+            inputs = {k_: v.to(self._device) for k_, v in inputs.items()}
+            n_tok = inputs["input_ids"].shape[1]
+            collector = ActivationCollector()
+            collector.register(self._model, layer_indices=layer_indices)
+            with torch.no_grad():
+                self._model(**inputs)
+            raw = collector.collect()
+            collector.remove_all()
+            torch.cuda.empty_cache()
+            return n_tok, {key: val.numpy() for key, val in raw.items()}
+
+        def feature_cka(act_a: np.ndarray, act_b: np.ndarray) -> float:
+            """Feature-space CKA — O(d²) instead of O(n²).
+
+            For long sequences (n >> d), sample-space CKA builds [n×n] Gram matrices
+            which is prohibitive (49K tokens → 19 GB per matrix). Feature-space CKA
+            operates on [d×d] covariance matrices instead — d=3584 for Qwen 7B,
+            so each matrix is ~100 MB. Same mathematical quantity, different computation path.
+
+            Works with different sequence lengths (no shared-prefix alignment needed).
+            """
+            a = act_a.astype(np.float64)
+            b = act_b.astype(np.float64)
+            a = a - a.mean(axis=0)
+            b = b - b.mean(axis=0)
+            # Feature covariance: [d×d] instead of [n×n]
+            feat_a = a.T @ a / a.shape[0]
+            feat_b = b.T @ b / b.shape[0]
+            numerator = np.linalg.norm(feat_a @ feat_b, "fro") ** 2
+            denom = np.linalg.norm(feat_a, "fro") * np.linalg.norm(feat_b, "fro")
+            return float(numerator / (denom ** 2)) if denom > 0 else 0.0
+
+        def cosine_mean(act_a: np.ndarray, act_b: np.ndarray) -> float:
+            """Cosine similarity between mean activation vectors on shared prefix."""
+            n = min(act_a.shape[0], act_b.shape[0])
+            if n < 2:
+                return 0.0
+            X = act_a[:n].astype(np.float64)
+            Y = act_b[:n].astype(np.float64)
+            mean_a = X.mean(axis=0)
+            mean_b = Y.mean(axis=0)
+            dot = np.dot(mean_a, mean_b)
+            norm = np.linalg.norm(mean_a) * np.linalg.norm(mean_b)
+            return float(dot / norm) if norm > 0 else 0.0
+
+        def grassmann_displacement_vector(pca_a, pca_b) -> np.ndarray | None:
+            """Compute a displacement vector in subspace space between two PCA bases.
+
+            Returns the vector of principal angle sines — captures both magnitude
+            and direction of the subspace rotation.
+            """
+            if pca_a is None or pca_b is None:
+                return None
+            from scipy.linalg import subspace_angles
+            k_min = min(pca_a.components.shape[0], pca_b.components.shape[0])
+            angles = subspace_angles(pca_a.components[:k_min].T, pca_b.components[:k_min].T)
+            return np.sin(angles)
+
+        # Capture all accumulation points (model already loaded)
+        N = len(accumulation_points)
+        print(f"Processing {N} accumulation points...")
+        all_acts: list[dict[str, np.ndarray]] = []
+        token_counts = []
+
+        for i, text in enumerate(accumulation_points):
+            n_tok, acts = capture(text)
+            all_acts.append(acts)
+            token_counts.append(n_tok)
+            print(f"  Point {i+1}/{N}: {n_tok} tokens")
+
+        # Extract new-token-only activations per turn
+        # Token positions for turn N's new content:
+        #   start = token_counts[N-1] (end of previous accumulation)
+        #   end = token_counts[N]     (end of current accumulation)
+        # The model processes the full context, but we measure only
+        # the new tokens' representations — isolating each turn's
+        # geometric contribution without prefix dilution.
+
+        # Extract new-token-only activations for all layers
+        all_new_token_acts = {}  # {layer_key: [array per turn]}
+
+        for idx in layer_indices:
+            layer_key = f"layer_{idx}"
+            full_acts = [a[layer_key] for a in all_acts]
+
+            new_token_acts = []
+            for i in range(N):
+                if i == 0:
+                    new_token_acts.append(full_acts[i])
+                else:
+                    prev_n = token_counts[i - 1]
+                    curr_n = token_counts[i]
+                    if curr_n > prev_n:
+                        new_token_acts.append(full_acts[i][prev_n:curr_n])
+                    else:
+                        new_token_acts.append(full_acts[i][-1:])
+            all_new_token_acts[layer_key] = new_token_acts
+
+        # Save raw new-token activations to Modal volume if requested
+        activations_saved = None
+        if save_activations:
+            import os
+            save_dir = "/cache/activations"
+            os.makedirs(save_dir, exist_ok=True)
+            save_path = f"{save_dir}/{save_activations}.npz"
+
+            arrays = {}
+            for layer_key, acts_list in all_new_token_acts.items():
+                for i, act in enumerate(acts_list):
+                    arrays[f"{layer_key}_turn_{i}"] = act.astype(np.float16)
+
+            np.savez_compressed(save_path, **arrays)
+            size_mb = os.path.getsize(save_path) / 1e6
+            print(f"  Saved activations: {save_path} ({size_mb:.1f} MB, {len(arrays)} arrays)")
+            activations_saved = save_path
+
+        # Compute per-layer trajectories
+        results_per_layer = {}
+
+        for idx in layer_indices:
+            layer_key = f"layer_{idx}"
+            new_token_acts = all_new_token_acts[layer_key]
+
+            # EVR on new tokens only
+            evr_trajectory = []
+            pca_bases = []
+            for act in new_token_acts:
+                eff_k = min(pca_k, act.shape[0] - 1, act.shape[1])
+                if eff_k < 1:
+                    evr_trajectory.append(0.0)
+                    pca_bases.append(None)
+                    continue
+                pca = compute_pca_basis(act, n_components=eff_k)
+                evr_trajectory.append(float(pca.explained_variance_ratio.sum()))
+                pca_bases.append(pca)
+
+            # CKA on new tokens: how does the geometry of turn N's tokens
+            # compare to turn N+1's tokens? (both influenced by full context)
+            cka_trajectory = [
+                feature_cka(new_token_acts[i], new_token_acts[i + 1])
+                for i in range(N - 1)
+            ]
+
+            # CKA drift: new tokens at turn N vs new tokens at turn 0
+            cka_drift = [1.0] + [
+                feature_cka(new_token_acts[0], new_token_acts[i])
+                for i in range(1, N)
+            ]
+
+            # Cosine on new tokens
+            cosine_trajectory = [
+                cosine_mean(new_token_acts[i], new_token_acts[i + 1])
+                for i in range(N - 1)
+            ]
+
+            # Grassmann + displacement vectors on new tokens
+            grassmann_trajectory = []
+            displacement_vectors = []
+            for i in range(N - 1):
+                if pca_bases[i] is not None and pca_bases[i + 1] is not None:
+                    k_min = min(
+                        pca_bases[i].components.shape[0],
+                        pca_bases[i + 1].components.shape[0],
+                    )
+                    rot = compute_rotation_summary(
+                        pca_bases[i].components[:k_min],
+                        pca_bases[i + 1].components[:k_min],
+                    )
+                    grassmann_trajectory.append(rot.grassmann_distance)
+                    dv = grassmann_displacement_vector(pca_bases[i], pca_bases[i + 1])
+                    displacement_vectors.append(dv)
+                else:
+                    grassmann_trajectory.append(float("nan"))
+                    displacement_vectors.append(None)
+
+            # Trajectory curvature on new tokens
+            curvature_trajectory = []
+            for i in range(len(displacement_vectors) - 1):
+                dv_a = displacement_vectors[i]
+                dv_b = displacement_vectors[i + 1]
+                if dv_a is not None and dv_b is not None:
+                    k = min(len(dv_a), len(dv_b))
+                    a, b = dv_a[:k], dv_b[:k]
+                    dot = np.dot(a, b)
+                    norm = np.linalg.norm(a) * np.linalg.norm(b)
+                    curvature_trajectory.append(float(dot / norm) if norm > 0 else 0.0)
+                else:
+                    curvature_trajectory.append(float("nan"))
+
+            # Serialize displacement vectors for cone violation analysis
+            dv_serialized = []
+            for dv in displacement_vectors:
+                if dv is not None:
+                    dv_serialized.append(dv.tolist())
+                else:
+                    dv_serialized.append(None)
+
+            results_per_layer[layer_key] = {
+                "cka_trajectory": cka_trajectory,
+                "cka_drift": cka_drift,
+                "cosine_trajectory": cosine_trajectory,
+                "evr_trajectory": evr_trajectory,
+                "grassmann_trajectory": grassmann_trajectory,
+                "curvature_trajectory": curvature_trajectory,
+                "displacement_vectors": dv_serialized,
+            }
+
+        print(f"Done: {N} points, {len(layer_indices)} layers")
+        return {
+            "model_id": self.model_id,
+            "num_points": N,
+            "token_counts": token_counts,
+            "layers": results_per_layer,
+            "activations_saved": activations_saved,
+        }
+
+    @modal.method()
+    def download_activations(self, name: str) -> bytes:
+        """Download saved activation .npz from the Modal volume."""
+        path = f"/cache/activations/{name}.npz"
+        with open(path, "rb") as f:
+            return f.read()
+
+
+# ---------------------------------------------------------------------------
+# Sprint 2.5: Qwen scaling ladder
+# ---------------------------------------------------------------------------
+
+QWEN_SCALING_MODELS = {
+    "0.5B": {"id": "Qwen/Qwen2.5-0.5B", "num_layers": 24, "gpu": "T4"},
+    "1.5B": {"id": "Qwen/Qwen2.5-1.5B", "num_layers": 28, "gpu": "T4"},
+    "3B":   {"id": "Qwen/Qwen2.5-3B",   "num_layers": 36, "gpu": "T4"},
+    "7B":   {"id": "Qwen/Qwen2.5-7B",   "num_layers": 28, "gpu": "A10G"},
+    "14B":  {"id": "Qwen/Qwen2.5-14B",  "num_layers": 48, "gpu": "A100"},
+}
+
+
+@app.function(
+    gpu="A100",  # Use A100 for all — simpler than per-model GPU selection
+    image=image,
+    volumes={"/cache": model_cache},
+    timeout=3600,
+)
+def scaling_ladder(model_id: str, num_layers: int) -> dict:
+    """Run code-vs-philosophy sanity check on a single Qwen model.
+
+    Returns SNR, EVR, Grassmann distance at 4 relative-depth layers (25/50/75/100%).
+
+    Args:
+        model_id: HuggingFace model ID
+        num_layers: Number of decoder layers in this model
+    """
+    import os
+
+    os.environ["HF_HOME"] = "/cache"
+
+    import numpy as np
+    import torch
+
+    from substrate.hooks import ActivationCollector
+    from substrate.capture import compute_pca_basis
+    from substrate.rotation import compute_rotation_summary
+
+    model, tokenizer = load_model(model_id)
+    device = next(model.parameters()).device
+
+    # Layer indices at 25%, 50%, 75%, 100% depth
+    layer_indices = [
+        num_layers // 4 - 1,
+        num_layers // 2 - 1,
+        3 * num_layers // 4 - 1,
+        num_layers - 1,
+    ]
+
+    prompt_code = (
+        "def quicksort(arr):\n"
+        "    if len(arr) <= 1:\n"
+        "        return arr\n"
+        "    pivot = arr[len(arr) // 2]\n"
+        "    left = [x for x in arr if x < pivot]\n"
+        "    middle = [x for x in arr if x == pivot]\n"
+        "    right = [x for x in arr if x > pivot]\n"
+        "    return quicksort(left) + middle + quicksort(right)"
+    )
+
+    prompt_philosophy = (
+        "The unexamined life is not worth living, Socrates declared, yet the very act of "
+        "examination introduces a paradox: to observe one's own consciousness is to alter it. "
+        "Every moment of introspection creates a new state that was not there before the looking."
+    )
+
+    def capture(text: str) -> dict[str, np.ndarray]:
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096)
+        inputs = {k_: v.to(device) for k_, v in inputs.items()}
+        collector = ActivationCollector()
+        collector.register(model, layer_indices=layer_indices)
+        with torch.no_grad():
+            model(**inputs)
+        raw = collector.collect()
+        collector.remove_all()
+        return {key: val.numpy() for key, val in raw.items()}
+
+    # Capture all three conditions
+    acts_code = capture(prompt_code)
+    acts_phil = capture(prompt_philosophy)
+    acts_code_2 = capture(prompt_code)  # Self-comparison control
+
+    k = 10
+    results_per_layer = {}
+
+    for idx in layer_indices:
+        layer_key = f"layer_{idx}"
+
+        act_c = acts_code[layer_key]
+        act_p = acts_phil[layer_key]
+        act_c2 = acts_code_2[layer_key]
+
+        eff_k = min(k, act_c.shape[0] - 1, act_c.shape[1])
+        if eff_k < 1:
+            continue
+
+        pca_c = compute_pca_basis(act_c, n_components=eff_k)
+        pca_p = compute_pca_basis(act_p, n_components=eff_k)
+        pca_c2 = compute_pca_basis(act_c2, n_components=eff_k)
+
+        rot_signal = compute_rotation_summary(pca_c.components, pca_p.components)
+        rot_noise = compute_rotation_summary(pca_c.components, pca_c2.components)
+
+        snr = (rot_signal.grassmann_distance / rot_noise.grassmann_distance
+               if rot_noise.grassmann_distance > 0 else float("inf"))
+
+        results_per_layer[layer_key] = {
+            "layer_idx": idx,
+            "layer_depth_pct": round((idx + 1) / num_layers * 100, 1),
+            "grassmann_signal": rot_signal.grassmann_distance,
+            "grassmann_noise": rot_noise.grassmann_distance,
+            "snr": snr,
+            "evr_code": float(pca_c.explained_variance_ratio.sum()),
+            "evr_philosophy": float(pca_p.explained_variance_ratio.sum()),
+        }
+
+    return {
+        "model_id": model_id,
+        "num_layers": num_layers,
+        "pca_k": k,
+        "layer_indices": layer_indices,
+        "layers": results_per_layer,
+    }

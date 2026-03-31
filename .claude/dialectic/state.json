@@ -1,0 +1,78 @@
+{
+  "session_id": "dialectic-20260328-research-agenda",
+  "prompt": "Six validated/testable claims from Phello substrate geometry research (Sprint 0-2). Build a research agenda that extends these into a publishable, fundable program.",
+  "iteration": 4,
+  "loop": "complete",
+  "min_iterations": 4,
+  "max_iterations": 5,
+  "phase": "concluded",
+  "thesis": {
+    "current": "Three-track DAG research agenda. Track 1 (Context Geometry): Claims 1-2 + CKA relational justification + cosine baseline + debiased CKA + Qwen replication. Track 2 (Coherence Thermometer): Claim 4 + CKA base rate + dense-vs-MoE + Qwen scaling ladder + expected sensitivity ordering (D1>D3>D2). Track 3 (Sprint 2.5 fork): Path A (germaneness) or Path B (coherence-preference tradeoff). Claim 6 = future work (ICLR 2026 singular vector rotation motivates). Research produces measurement framework; Phello applies as product input.",
+    "confidence": {
+      "R": 0.71,
+      "E": 0.61,
+      "C": 0.45
+    },
+    "confidence_history": [
+      {
+        "iteration": 0,
+        "R": 0.5,
+        "E": 0.3,
+        "C": 0.5
+      },
+      {
+        "iteration": 1,
+        "R": 0.62,
+        "E": 0.38,
+        "C": 0.45
+      },
+      {
+        "iteration": 2,
+        "R": 0.66,
+        "E": 0.50,
+        "C": 0.45
+      },
+      {
+        "iteration": 3,
+        "R": 0.69,
+        "E": 0.58,
+        "C": 0.45
+      }
+    ]
+  },
+  "evidence": {
+    "supporting": [
+      "Claims 1-2 validated with clean Sprint 0-1 data",
+      "CKA justified for cross-input relational comparison (cosine-equivalence doesn't apply)",
+      "Three independent publication roots (DAG structure)",
+      "Coherence-control tradeoff documented in RepE — Sprint 2 connects",
+      "ICLR 2026: singular vector rotation correlates with OOD degradation",
+      "Qwen scaling ladder enables cheap generalization test",
+      "Both Sprint 2.5 fork paths lead to publishable outcomes",
+      "Research-product tension dissolved via measurement-input framing",
+      "No competitors doing geometric preference measurement",
+      "Expected CKA sensitivity ordering helps interpret Sprint 2.5"
+    ],
+    "challenging": [
+      "CKA outlier sensitivity — debiased CKA comparison needed",
+      "CKA insensitive to local structure — D2 may not separate",
+      "Sprint 2.5 hasn't run — Path A/B reasoning is hypothetical",
+      "Generalization to >14B may require collaborator compute",
+      "RLVR spurious rewards complicate future Claim 6 validation"
+    ]
+  },
+  "decision": "conclude",
+  "holdout": false,
+  "holdout_state": {
+    "pass": 1,
+    "max_passes": 2,
+    "verdict": null,
+    "report_path": null
+  },
+  "output_dir": ".dialectic-output/",
+  "keep_artifacts": [
+    "memo",
+    "spine",
+    "history"
+  ]
+}

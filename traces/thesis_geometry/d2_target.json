@@ -1,0 +1,8 @@
+{
+  "iteration": 1,
+  "turn": 17,
+  "phase": "critique",
+  "original_content_preview": "# CRITIQUE PASS (Iteration 1)\n\n## Meta-Probes\n\n```yaml\nprobes:\n  contingency: STRUCTURAL — The geometric structure of reasoning in activation space is demonstrated across multiple model families and s",
+  "original_content_length": 5007,
+  "fallback": false
+}

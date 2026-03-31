@@ -1,0 +1,13 @@
+{
+  "session_name": "agentic_commerce",
+  "source_file": "/Users/austinsalter/.claude/projects/-Users-austinsalter-Documents-Life-Business-Study-Macro-Theses/9e1a9fd0-596f-40f9-a331-c9f3b8146418.jsonl",
+  "turns": 49,
+  "complete_iterations": 5,
+  "estimated_tokens": 48942,
+  "thesis_modifications": 2,
+  "phases": {
+    "expansion": 5,
+    "compression": 5,
+    "critique": 5
+  }
+}
